@@ -1,5 +1,6 @@
 // page.tsx
 import React from "react";
+import Image from "next/image";
 
 export default function Home() {
   return (
@@ -31,8 +32,8 @@ export default function Home() {
           creative experts combines art and strategy to create unique identities
           for modern brands.
         </p>
-        <img
-          src="/images/about-image.jpg"
+        <Image
+          src="/about-image.png"
           alt="About Aakkai"
           className="mx-auto rounded-lg shadow-lg max-w-lg"
         />
@@ -53,7 +54,7 @@ export default function Home() {
             <h3 className="text-xl font-semibold mb-2">Custom Illustrations</h3>
             <p>
               Beautiful, hand-crafted illustrations tailored to represent your
-              brand's story.
+              brand story.
             </p>
           </div>
           <div className="p-6 bg-white shadow-lg rounded-lg">
@@ -72,15 +73,15 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           <div className="p-6 bg-white shadow-lg rounded-lg">
             <p>
-              "Aakkai transformed our brand vision into something truly
-              remarkable!"
+              Aakkai transformed our brand vision into something truly
+              remarkable!
             </p>
             <p className="mt-4 font-semibold">- Jane Doe, CEO of CreativeCo</p>
           </div>
           <div className="p-6 bg-white shadow-lg rounded-lg">
             <p>
-              "Their illustrations have made our marketing stand out. Highly
-              recommend!"
+              Their illustrations have made our marketing stand out. Highly
+              recommend!
             </p>
             <p className="mt-4 font-semibold">
               - John Smith, Head of Marketing
@@ -95,7 +96,7 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="p-6 bg-white shadow-lg rounded-lg">
             <h3 className="text-xl font-semibold mb-2">Step 1</h3>
-            <p>Connect with us to discuss your brand's needs and vision.</p>
+            <p>Connect with us to discuss your brand needs and vision.</p>
           </div>
           <div className="p-6 bg-white shadow-lg rounded-lg">
             <h3 className="text-xl font-semibold mb-2">Step 2</h3>

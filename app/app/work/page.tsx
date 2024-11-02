@@ -138,6 +138,8 @@ const Work = () => {
                   src={category.thumbnail}
                   alt={category.name}
                   className="w-full h-48 object-cover rounded-lg mb-4"
+                  width={100}
+                  height={100}
                 />
                 <h3 className="text-xl font-semibold text-gray-800">
                   {category.name}
@@ -161,6 +163,8 @@ const Work = () => {
                         src={project.thumbnail}
                         alt={project.title}
                         className="w-full h-32 object-cover rounded-lg mb-2"
+                        width={100}
+                        height={100}
                       />
                       <p className="text-lg text-gray-700">{project.title}</p>
                     </div>
@@ -182,6 +186,8 @@ const Work = () => {
                   src={project.thumbnail}
                   alt={project.title}
                   className="w-full h-32 object-cover rounded-lg mb-2"
+                  width={100}
+                  height={100}
                 />
                 <p className="text-lg text-gray-700">{project.title}</p>
               </div>

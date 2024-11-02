@@ -1,5 +1,3 @@
-// page.tsx
-import React from "react";
 import Image from "next/image";
 
 export default function Home() {
@@ -33,8 +31,10 @@ export default function Home() {
           for modern brands.
         </p>
         <Image
-          src="/about-image.png"
+          src="/logo.png"
           alt="About Aakkai"
+          width={100}
+          height={100}
           className="mx-auto rounded-lg shadow-lg max-w-lg"
         />
       </section>

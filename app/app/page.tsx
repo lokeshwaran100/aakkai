@@ -1,6 +1,24 @@
 import Image from "next/image";
 
 export default function Home() {
+  const teamMembers = [
+    {
+      name: "Alice Johnson",
+      expertise: "Brand Strategist",
+      image: "/logo.jpg",
+    },
+    {
+      name: "Bob Smith",
+      expertise: "Illustration Artist",
+      image: "/logo.jpg",
+    },
+    {
+      name: "Charlie Brown",
+      expertise: "Identity Designer",
+      image: "/logo.jpg",
+    },
+  ];
+
   return (
     <div className="font-sans text-gray-800">
       {/* Hero Section */}
@@ -64,6 +82,31 @@ export default function Home() {
               memorable.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* Team Members Section */}
+      <section className="py-16 px-8 bg-gray-100 dark:bg-gray-800">
+        <h2 className="text-3xl font-bold text-center mb-8">Meet Our Team</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {teamMembers.map((member, index) => (
+            <div
+              key={index}
+              className="p-6 bg-white dark:bg-gray-900 shadow-lg rounded-lg text-center"
+            >
+              <Image
+                src={member.image}
+                alt={member.name}
+                width={150}
+                height={150}
+                className="mx-auto rounded-full shadow-lg mb-4"
+              />
+              {/* <h3 className="text-xl font-semibold mb-2">{member.name}</h3> */}
+              {/* <p className="text-gray-600 dark:text-gray-400">{member.role}</p> */}
+              {/* <p className="mt-4">{member.expertise}</p> */}
+              <h3 className="text-xl font-semibold mb-2">{member.expertise}</h3>
+            </div>
+          ))}
         </div>
       </section>
 

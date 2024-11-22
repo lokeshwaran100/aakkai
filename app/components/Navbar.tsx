@@ -4,6 +4,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
+import { ModeToggle } from "./shared/ui/ModeToggle/ModeToggle";
 
 const Navbar = () => {
   const [navOpen, setNavOpen] = useState(false);
@@ -23,6 +24,9 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-8">
+            <div>
+              <ModeToggle />
+            </div>
             <Link href="/" className="text-gray-600 hover:text-gray-800">
               Home
             </Link>
@@ -39,6 +43,9 @@ const Navbar = () => {
 
           {/* Mobile Menu Icon */}
           <div className="md:hidden flex items-center">
+            <div className="mr-2">
+              <ModeToggle />
+            </div>
             <button
               onClick={toggleNav}
               className="text-gray-800 focus:outline-none"

@@ -6,7 +6,7 @@ export default function Home() {
       {/* Hero Section */}
       <section
         className="h-screen bg-cover bg-center"
-        style={{ backgroundImage: 'url("/logo.png")' }}
+        style={{ backgroundImage: 'url("/logo.jpg")' }}
       >
         <div className="flex items-center justify-center h-full bg-black bg-opacity-50">
           <div className="text-center px-6">
@@ -31,7 +31,7 @@ export default function Home() {
           for modern brands.
         </p>
         <Image
-          src="/logo.png"
+          src="/logo.jpg"
           alt="About Aakkai"
           width={100}
           height={100}

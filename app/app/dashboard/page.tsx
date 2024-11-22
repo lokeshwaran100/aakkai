@@ -1,6 +1,21 @@
+"use client";
+
 import React from "react";
+// import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function AdminDashboard() {
+  const router = useRouter();
+  useEffect(() => {
+    const checkAuth = async () => {
+      const res = await fetch("/api/auth/check-auth");
+      if (!res.ok) {
+        router.push("/login");
+      }
+    };
+    checkAuth();
+  }, [router]);
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
       {/* Header */}

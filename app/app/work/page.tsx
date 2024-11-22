@@ -11,20 +11,19 @@ import Image from "next/image";
 // };
 
 const clientCategories = [
-  { id: 1, name: "Arts & Culture", thumbnail: "/dummy.gif" },
-  {
-    id: 2,
-    name: "Banking & Finance",
-    thumbnail: "/dummy.gif",
-  },
-  { id: 3, name: "Civic & Public", thumbnail: "/dummy.gif" },
+  { id: 1, name: "Food & Drinks", thumbnail: "/dummy.gif" },
+  { id: 2, name: "Fashion & Beauty", thumbnail: "/dummy.gif" },
+  { id: 3, name: "Banking & Finance", thumbnail: "/dummy.gif" },
+  { id: 4, name: "Technology", thumbnail: "/dummy.gif" },
+  { id: 5, name: "Retail", thumbnail: "/dummy.gif" },
+  { id: 6, name: "Real Estate", thumbnail: "/dummy.gif" },
   // Add more categories as needed
 ];
 
 const workCategories = [
   {
     id: 1,
-    name: "Brand Identity",
+    name: "Brand Strategy",
     projects: [
       {
         id: 101,
@@ -50,7 +49,51 @@ const workCategories = [
   },
   {
     id: 2,
-    name: "Book Design",
+    name: "Packaging",
+    projects: [
+      {
+        id: 201,
+        title: "Children’s Book",
+        thumbnail: "/dummy.jpg",
+      },
+      {
+        id: 202,
+        title: "Coffee Table Book",
+        thumbnail: "/dummy.jpg",
+      },
+      {
+        id: 203,
+        title: "Academic Book",
+        thumbnail: "/dummy.jpg",
+      },
+      { id: 204, title: "Magazine Layout", thumbnail: "/dummy.jpg" },
+    ],
+  },
+  {
+    id: 3,
+    name: "Children Book Illustration",
+    projects: [
+      {
+        id: 201,
+        title: "Children’s Book",
+        thumbnail: "/dummy.jpg",
+      },
+      {
+        id: 202,
+        title: "Coffee Table Book",
+        thumbnail: "/dummy.jpg",
+      },
+      {
+        id: 203,
+        title: "Academic Book",
+        thumbnail: "/dummy.jpg",
+      },
+      { id: 204, title: "Magazine Layout", thumbnail: "/dummy.jpg" },
+    ],
+  },
+  {
+    id: 4,
+    name: "UI/UX Design",
     projects: [
       {
         id: 201,

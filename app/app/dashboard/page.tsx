@@ -1,12 +1,22 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 // import { useRouter } from "next/router";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import AddTeamMemberDialog, {
+  TeamMemberData,
+} from "@/components/AddTeamMemberDialog";
 
 export default function AdminDashboard() {
   const router = useRouter();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleAddMember = (data: TeamMemberData) => {
+    console.log("Team Member Added:", data);
+    // You can handle the data, like sending it to an API or state management
+  };
+
   useEffect(() => {
     const checkAuth = async () => {
       const res = await fetch("/api/auth/check-auth");
@@ -30,9 +40,21 @@ export default function AdminDashboard() {
           <div className="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg">
             <h3 className="text-xl font-semibold mb-4">Team Members</h3>
             <p className="text-4xl font-bold mb-4">15</p>
-            <button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg">
-              Add Team Member
-            </button>
+
+            <div>
+              <button
+                onClick={() => setIsDialogOpen(true)}
+                className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg"
+              >
+                Add Team Member
+              </button>
+
+              <AddTeamMemberDialog
+                isOpen={isDialogOpen}
+                onClose={() => setIsDialogOpen(false)}
+                onSubmit={handleAddMember}
+              />
+            </div>
           </div>
 
           {/* Card: Projects Completed */}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 
 const expertiseOptions = ["Illustrator", "UI/UX Designer", "Brand Strategist"];
 
@@ -29,7 +30,7 @@ export default function AddTeamMemberDialog({
   };
 
   // Handle form submission
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!name || !experience || !image) {
@@ -43,6 +44,37 @@ export default function AddTeamMemberDialog({
       experience: parseInt(experience),
       image,
     };
+
+    const formData = new FormData();
+
+    // Append other form fields
+    formData.append("name", name); // Name from state/input
+    formData.append("expertise", expertise); // Expertise from dropdown
+    formData.append("experience", experience); // Experience from state/input
+
+    // Append the file
+    formData.append("image", image); // imageFile should be the selected File object from an input field
+
+    try {
+      const res = await axios.post("/api/teamMembers", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Required to process FormData
+        },
+      });
+
+      if (res.status === 201) {
+        alert("Team member added successfully!");
+      } else {
+        alert("Failed to add team member.");
+      }
+
+      console.log("Team member added successfully:", res.data);
+    } catch (error) {
+      console.log(
+        "Error adding team member:",
+        error.response?.data || error.message
+      );
+    }
 
     onSubmit(teamMemberData); // Pass the data back to the parent
     onClose(); // Close the dialog after submitting

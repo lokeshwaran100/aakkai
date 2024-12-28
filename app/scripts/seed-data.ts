@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
 // Database connection
-// const MONGODB_URI = 'mongodb+srv://admin:admin@main.hecbk.mongodb.net/aakkai?retryWrites=true&w=majority&appName=main';
 const MONGODB_URI = process.env.NEXT_PUBLIC_MONGODB_URI;
 
 if (!MONGODB_URI) {

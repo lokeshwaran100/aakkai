@@ -1,6 +1,7 @@
-"use client";
-
-import ContactForm from "@/components/forms/contact-form";
+import dynamic from "next/dynamic";
+const DContactForm = dynamic(() => import("@/components/forms/contact-form"), {
+  ssr: false,
+});
 
 export default function ContactPage() {
   return (
@@ -11,7 +12,7 @@ export default function ContactPage() {
           Ready to start your project? We'd love to hear from you.
         </p>
       </div>
-      <ContactForm />
+      <DContactForm />
     </div>
   );
 }

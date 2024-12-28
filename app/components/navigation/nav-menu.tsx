@@ -1,26 +1,26 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Menu } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { Dropdown, DropdownItem } from "@/components/ui/dropdown"
+import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { Dropdown, DropdownItem } from "@/components/ui/dropdown";
 
 const mainNavItems = [
   { label: "Home", href: "/" },
   { label: "Work", href: "/work" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
-]
+];
 
 const portalNavItems = [
   { label: "Team Portal", href: "/team/login" },
   { label: "Admin Portal", href: "/admin/login" },
-]
+];
 
 export function NavMenu() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <div className="flex items-center gap-6">
@@ -59,7 +59,7 @@ export function NavMenu() {
       {/* Mobile Navigation */}
       <Dropdown
         trigger={
-          <Button variant="ghost" size="icon" className="md:hidden">
+          <Button variant="ghost" size="sm" className="md:hidden">
             <Menu className="h-5 w-5" />
             <span className="sr-only">Toggle menu</span>
           </Button>
@@ -74,7 +74,10 @@ export function NavMenu() {
             </Link>
           </DropdownItem>
         ))}
-        <DropdownItem disabled className="font-medium text-sm px-2 py-1.5 text-muted-foreground">
+        <DropdownItem
+          disabled
+          className="font-medium text-sm px-2 py-1.5 text-muted-foreground"
+        >
           Portals
         </DropdownItem>
         {portalNavItems.map((item) => (
@@ -86,5 +89,5 @@ export function NavMenu() {
         ))}
       </Dropdown>
     </div>
-  )
+  );
 }

@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button"
-import Image from "next/image"
-import Link from "next/link"
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -15,25 +15,27 @@ export default function Hero() {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/40" />
       </div>
-      
+
       <div className="container relative z-10 py-20">
         <div className="max-w-3xl space-y-8 animate-fade-in-up">
           <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
-            Crafting Visual Stories That <span className="text-primary">Inspire</span>
+            Crafting Visual Stories That{" "}
+            <span className="text-primary">Inspire</span>
           </h1>
           <p className="text-xl md:text-2xl text-gray-300 leading-relaxed">
-            We bring brands to life through stunning visuals and strategic design
+            We bring brands to life through stunning visuals and strategic
+            design
           </p>
           <div className="flex flex-wrap gap-4">
-            <Button asChild size="lg" className="animate-scale">
+            <Button size="lg" className="animate-scale">
               <Link href="/contact">Start Your Project</Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="animate-scale">
+            <Button size="lg" variant="outline" className="animate-scale">
               <Link href="/work">View Our Work</Link>
             </Button>
           </div>
         </div>
       </div>
     </section>
-  )
+  );
 }

@@ -1,23 +1,23 @@
-"use client"
+"use client";
 
-import Link from 'next/link'
-import { useTheme } from 'next-themes'
-import { Button } from '@/components/ui/button'
-import { Menu, Moon, Sun, X } from 'lucide-react'
-import { useState } from 'react'
+import Link from "next/link";
+import { useTheme } from "next-themes";
+import { Button } from "@/components/ui/button";
+import { Menu, Moon, Sun, X } from "lucide-react";
+import { useState } from "react";
 
 const navItems = [
-  { href: '/', label: 'Home' },
-  { href: '/work', label: 'Work' },
-  { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Contact' },
-  { href: '/admin/login', label: 'Admin Login' },
-  { href: '/team/login', label: 'Team Login' },
-]
+  { href: "/", label: "Home" },
+  { href: "/work", label: "Work" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+  { href: "/admin/login", label: "Admin Login" },
+  { href: "/team/login", label: "Team Login" },
+];
 
 export default function Navigation() {
-  const { theme, setTheme } = useTheme()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { theme, setTheme } = useTheme();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -27,7 +27,7 @@ export default function Navigation() {
         </Link>
 
         {/* Mobile Menu Button */}
-        <button 
+        <button
           className="md:hidden"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
@@ -47,7 +47,7 @@ export default function Navigation() {
           ))}
           <Button
             variant="ghost"
-            size="icon"
+            size="sm"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           >
             <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -75,8 +75,8 @@ export default function Navigation() {
                   variant="ghost"
                   className="justify-start"
                   onClick={() => {
-                    setTheme(theme === "dark" ? "light" : "dark")
-                    setIsMenuOpen(false)
+                    setTheme(theme === "dark" ? "light" : "dark");
+                    setIsMenuOpen(false);
                   }}
                 >
                   <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -89,5 +89,5 @@ export default function Navigation() {
         )}
       </div>
     </header>
-  )
+  );
 }

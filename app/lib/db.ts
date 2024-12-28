@@ -1,4 +1,13 @@
 import mongoose from "mongoose";
+import { JSDOM } from "jsdom";
+
+const globalAny: any = global;
+
+// Create a DOM simulation using jsdom
+const dom = new JSDOM("");
+
+globalAny.document = dom.window.document;
+globalAny.window = dom.window;
 
 const MONGODB_URI = process.env.NEXT_PUBLIC_MONGODB_URI as string;
 
@@ -8,10 +17,10 @@ if (!MONGODB_URI) {
   );
 }
 
-let cached = global.mongoose;
+let cached = globalAny.mongoose;
 
 if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+  cached = globalAny.mongoose = { conn: null, promise: null };
 }
 
 async function dbConnect() {

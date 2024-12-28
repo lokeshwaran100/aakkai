@@ -1,4 +1,6 @@
-import ContactForm from "@/components/forms/contact-form"
+"use client";
+
+import ContactForm from "@/components/forms/contact-form";
 
 export default function ContactPage() {
   return (
@@ -11,5 +13,5 @@ export default function ContactPage() {
       </div>
       <ContactForm />
     </div>
-  )
+  );
 }

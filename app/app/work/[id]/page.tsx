@@ -1,12 +1,22 @@
-import { projects } from "@/lib/projects"
-import { notFound } from "next/navigation"
-import Image from "next/image"
+import { projects } from "@/lib/projects";
+import { notFound } from "next/navigation";
+import Image from "next/image";
+
+export async function generateStaticParams() {
+  const works = [
+    { id: "1" },
+    { id: "2" },
+    { id: "3" }, // Replace with actual data source
+  ];
+
+  return works.map((work) => ({ id: work.id }));
+}
 
 export default function ProjectPage({ params }: { params: { id: string } }) {
-  const project = projects.find((p) => p.id === params.id)
-  
+  const project = projects.find((p) => p.id === params.id);
+
   if (!project) {
-    notFound()
+    notFound();
   }
 
   return (
@@ -20,11 +30,13 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
             className="object-cover rounded-lg"
           />
         </div>
-        
+
         <div className="space-y-6">
           <div>
             <h1 className="text-4xl font-bold mb-2">{project.title}</h1>
-            <p className="text-lg text-muted-foreground">{project.description}</p>
+            <p className="text-lg text-muted-foreground">
+              {project.description}
+            </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
@@ -58,5 +70,5 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
         </div>
       </div>
     </div>
-  )
+  );
 }

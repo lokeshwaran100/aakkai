@@ -2,6 +2,7 @@ export interface TeamMember {
   id: string;
   name: string;
   role: string;
+  expertise: string;
   email: string;
   status: "active" | "inactive";
 }

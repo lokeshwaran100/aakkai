@@ -106,9 +106,10 @@ export const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Brand Strategy */}
             <div className="group p-8 rounded-2xl bg-white dark:bg-gray-800/30 backdrop-blur-lg border border-gray-200/50 dark:border-gray-700/50 shadow-sm hover:border-primary-500/50 transition-all duration-300 hover:shadow-primary">
-              <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Palette className="text-white" size={32} />
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 bg-gradient-to-br from-primary-500 to-accent-500 dark:bg-gradient-to-br dark:from-gray-800 dark:to-gray-700">
+                <Palette className="text-white dark:text-gray-300" size={32} />
               </div>
               <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
                 Brand Strategy
@@ -118,9 +119,10 @@ export const Home = () => {
               </p>
             </div>
 
+            {/* UI Design */}
             <div className="group p-8 rounded-2xl bg-white dark:bg-gray-800/30 backdrop-blur-lg border border-gray-200/50 dark:border-gray-700/50 shadow-sm hover:border-accent-500/50 transition-all duration-300 hover:shadow-accent">
-              <div className="w-16 h-16 bg-gradient-to-br from-accent-500 to-accent-700 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Lightbulb className="text-white" size={32} />
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 bg-gradient-to-br from-accent-500 to-primary-500 dark:bg-gradient-to-br dark:from-gray-700 dark:to-gray-600">
+                <Lightbulb className="text-white dark:text-gray-200" size={32} />
               </div>
               <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
                 UI Design
@@ -130,9 +132,10 @@ export const Home = () => {
               </p>
             </div>
 
+            {/* UX Design */}
             <div className="group p-8 rounded-2xl bg-white dark:bg-gray-800/30 backdrop-blur-lg border border-gray-200/50 dark:border-gray-700/50 shadow-sm hover:border-neon-500/50 transition-all duration-300 hover:shadow-neon">
-              <div className="w-16 h-16 bg-gradient-to-br from-neon-500 to-neon-700 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Target className="text-white" size={32} />
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 bg-gradient-to-br from-primary-500 to-accent-500 dark:bg-gradient-to-br dark:from-gray-600 dark:to-gray-500">
+                <Target className="text-white dark:text-gray-100" size={32} />
               </div>
               <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
                 UX Design

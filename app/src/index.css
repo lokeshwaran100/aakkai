@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased;
+  }
+}
+
+@layer components {
+  .glass-light {
+    @apply bg-white/70 backdrop-blur-lg border border-primary-200/20;
+  }
+  
+  .glass-dark {
+    @apply bg-neutral-900/70 backdrop-blur-lg border border-primary-900/20;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-accent-500;
+  }
+
+  .hover-glow {
+    @apply transition-shadow duration-300 hover:shadow-glow;
+  }
+
+  .hover-glow-accent {
+    @apply transition-shadow duration-300 hover:shadow-glow-accent;
+  }
+
+  .btn-primary {
+    @apply relative px-6 py-3 rounded-full overflow-hidden group;
+  }
+
+  .btn-primary::before {
+    @apply absolute inset-0 bg-gradient-to-r from-primary-500 via-accent-500 to-primary-500 opacity-100 transition-all duration-500 bg-[length:200%_100%] group-hover:bg-[length:100%_100%] group-hover:animate-gradient;
+    content: '';
+  }
+
+  .btn-primary span {
+    @apply relative text-white font-medium;
+  }
+}
+
+/* Futuristic mesh gradient background */
+.mesh-pattern {
+  background-color: theme('colors.neutral.950');
+  background-image: 
+    radial-gradient(at 40% 20%, rgba(42, 181, 125, 0.15) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(246, 177, 25, 0.15) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(42, 181, 125, 0.15) 0px, transparent 50%),
+    radial-gradient(at 80% 50%, rgba(246, 177, 25, 0.15) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(42, 181, 125, 0.15) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, rgba(246, 177, 25, 0.15) 0px, transparent 50%),
+    radial-gradient(at 0% 0%, rgba(42, 181, 125, 0.15) 0px, transparent 50%);
+}
+
+.dark .mesh-pattern {
+  background-color: theme('colors.neutral.950');
+  background-image: 
+    radial-gradient(at 40% 20%, rgba(42, 181, 125, 0.25) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(246, 177, 25, 0.25) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(42, 181, 125, 0.25) 0px, transparent 50%),
+    radial-gradient(at 80% 50%, rgba(246, 177, 25, 0.25) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(42, 181, 125, 0.25) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, rgba(246, 177, 25, 0.25) 0px, transparent 50%),
+    radial-gradient(at 0% 0%, rgba(42, 181, 125, 0.25) 0px, transparent 50%);
+}
+
+/* Futuristic card styles */
+.card {
+  @apply relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 transition-all duration-300;
+}
+
+.card::before {
+  @apply absolute inset-0 bg-gradient-to-b from-primary-500/10 to-accent-500/10 opacity-0 transition-opacity duration-300;
+  content: '';
+}
+
+.card:hover::before {
+  @apply opacity-100;
+}
+
+/* Animated gradient text */
+.animate-gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-500 via-accent-500 to-primary-500 animate-gradient bg-[length:200%_auto];
+}
+
+/* Glowing border effect */
+.glow-border {
+  @apply relative;
+}
+
+.glow-border::after {
+  @apply absolute inset-0 rounded-2xl border-2 border-primary-500/50 blur-sm transition-all duration-300;
+  content: '';
+}
+
+.glow-border:hover::after {
+  @apply border-primary-400 blur-md scale-105;
+}

@@ -52,10 +52,12 @@ export const Header = () => {
               ) : (
                 <Link
                   to="/login"
-                  className="relative px-6 py-2 rounded-full overflow-hidden group hover-glow"
+                  className="relative px-6 py-2 rounded-full overflow-hidden group transition-all duration-300 
+                            text-white bg-gradient-to-r from-primary-500 to-accent-500 
+                            hover:from-primary-600 hover:to-accent-600 
+                            dark:bg-white dark:text-black dark:bg-none dark:hover:bg-gray-100"
                 >
-                  <span className="absolute inset-0 bg-gradient-to-r from-primary-500 to-accent-500 transition-transform group-hover:scale-105 duration-300"></span>
-                  <span className="relative text-white font-medium">Sign In</span>
+                  <span className="relative font-medium">Sign In</span>
                 </Link>
               )}
             </nav>
@@ -107,10 +109,12 @@ export const Header = () => {
               ) : (
                 <Link
                   to="/login"
-                  className="block relative px-6 py-2 rounded-full overflow-hidden group hover-glow"
+                  className="block relative px-6 py-2 rounded-full overflow-hidden group transition-all duration-300 
+                            text-white bg-gradient-to-r from-primary-500 to-accent-500 
+                            hover:from-primary-600 hover:to-accent-600 
+                            dark:bg-white dark:text-black dark:bg-none dark:hover:bg-gray-100"
                 >
-                  <span className="absolute inset-0 bg-gradient-to-r from-primary-500 to-accent-500 transition-transform group-hover:scale-105 duration-300"></span>
-                  <span className="relative text-white font-medium">Sign In</span>
+                  <span className="relative font-medium">Sign In</span>
                 </Link>
               )}
             </nav>

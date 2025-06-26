@@ -129,7 +129,10 @@ export const About = () => {
           </p>
           <Link
             to="/contact"
-            className="group inline-flex items-center px-8 py-4 text-lg font-medium rounded-full transition-all duration-300 shadow-lg hover:shadow-xl text-white bg-gradient-to-r from-primary-500 via-accent-500 to-neon-500 hover:from-primary-600 hover:via-accent-600 hover:to-neon-600 dark:bg-white dark:text-black dark:hover:bg-gray-100 dark:shadow-none"
+            className="group inline-flex items-center px-8 py-4 text-lg font-medium rounded-full transition-all duration-300 shadow-lg hover:shadow-xl 
+                      text-white bg-gradient-to-r from-primary-500 via-accent-500 to-neon-500 
+                      hover:from-primary-600 hover:via-accent-600 hover:to-neon-600 
+                      dark:bg-white dark:text-black dark:bg-none dark:hover:bg-gray-100 dark:shadow-none"
           >
             Get in Touch
             <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />

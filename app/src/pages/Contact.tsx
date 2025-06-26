@@ -187,7 +187,10 @@ export const Contact = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full flex items-center justify-center px-8 py-4 text-lg font-medium rounded-lg transition-all duration-300 text-white disabled:opacity-50 bg-gradient-to-r from-primary-500 via-accent-500 to-neon-500 hover:from-primary-600 hover:via-accent-600 hover:to-neon-600 dark:bg-white dark:text-black dark:hover:bg-gray-100"
+                    className="w-full flex items-center justify-center px-8 py-4 text-lg font-medium rounded-lg transition-all duration-300 disabled:opacity-50 shadow-lg hover:shadow-xl 
+                              text-white bg-gradient-to-r from-primary-500 via-accent-500 to-neon-500 
+                              hover:from-primary-600 hover:via-accent-600 hover:to-neon-600 
+                              dark:bg-white dark:text-black dark:bg-none dark:hover:bg-gray-100 dark:shadow-none"
                   >
                     {isSubmitting ? (
                       'Sending...'

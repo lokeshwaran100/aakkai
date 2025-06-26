@@ -23,7 +23,7 @@ export const Header = () => {
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center space-x-3">
               <Logo />
-              <span className="text-2xl font-bold text-gradient">Aakkai</span>
+              <span className="text-2xl font-bold text-primary-500 dark:text-white">Aakkai</span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -58,22 +58,26 @@ export const Header = () => {
                   <span className="relative text-white font-medium">Sign In</span>
                 </Link>
               )}
-              
+            </nav>
+
+            {/* Theme Toggle and Mobile Menu Button */}
+            <div className="flex items-center space-x-4">
+              {/* Theme Toggle - Always visible */}
               <button
                 onClick={toggleTheme}
                 className="p-2 rounded-full text-neutral-700 dark:text-neutral-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
               >
                 {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
               </button>
-            </nav>
 
-            {/* Mobile Menu Button */}
-            <button
-              className="md:hidden p-2 text-neutral-700 dark:text-neutral-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+              {/* Mobile Menu Button */}
+              <button
+                className="md:hidden p-2 text-neutral-700 dark:text-neutral-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
           </div>
 
           {/* Mobile Navigation */}
@@ -109,14 +113,6 @@ export const Header = () => {
                   <span className="relative text-white font-medium">Sign In</span>
                 </Link>
               )}
-              
-              <button
-                onClick={toggleTheme}
-                className="flex items-center space-x-2 text-neutral-700 dark:text-neutral-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
-              >
-                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-                <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
-              </button>
             </nav>
           )}
         </div>

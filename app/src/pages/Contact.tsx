@@ -51,7 +51,7 @@ export const Contact = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-neutral-50 via-primary-50/10 to-neutral-50 dark:from-gray-900 dark:via-primary-900/10 dark:to-gray-900"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary-400 via-accent-400 to-neon-400">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary-400 via-accent-400 to-neon-400 dark:bg-none dark:text-white">
               Get in Touch
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
@@ -187,7 +187,7 @@ export const Contact = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full flex items-center justify-center px-8 py-4 text-lg font-medium rounded-lg bg-gradient-to-r from-primary-500 via-accent-500 to-neon-500 hover:from-primary-600 hover:via-accent-600 hover:to-neon-600 transition-all duration-300 text-white disabled:opacity-50"
+                    className="w-full flex items-center justify-center px-8 py-4 text-lg font-medium rounded-lg transition-all duration-300 text-white disabled:opacity-50 bg-gradient-to-r from-primary-500 via-accent-500 to-neon-500 hover:from-primary-600 hover:via-accent-600 hover:to-neon-600 dark:bg-white dark:text-black dark:hover:bg-gray-100"
                   >
                     {isSubmitting ? (
                       'Sending...'

@@ -77,7 +77,7 @@ export const Work = () => {
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-gray-900 pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl md:text-5xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-primary-400 via-accent-400 to-neon-400">
+        <h1 className="text-4xl md:text-5xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-primary-400 via-accent-400 to-neon-400 dark:bg-none dark:text-white">
           Our Work
         </h1>
 

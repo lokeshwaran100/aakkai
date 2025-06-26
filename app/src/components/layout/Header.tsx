@@ -18,7 +18,7 @@ export const Header = () => {
 
   return (
     <header className="fixed w-full z-50 transition-colors duration-300">
-      <div className={`${isDarkMode ? 'glass-dark' : 'glass-light'} backdrop-blur-lg border-b border-neutral-200/10 dark:border-neutral-700/10`}>
+      <div className="bg-white dark:bg-gray-900 border-b border-neutral-200/20 dark:border-neutral-700/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center space-x-3">

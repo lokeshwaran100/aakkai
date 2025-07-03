@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase';
 import { uploadPdfToStorage, deletePdfFromStorage } from '../../lib/storage';
 import { PlusCircle, Pencil, Trash2, Calendar, Tag, Clock, CheckCircle, Pause, Play, User, Eye, FileText, Upload, X } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { PROJECT_CATEGORIES } from '../../types';
 import type { MemberProject, TeamMember } from '../../types';
 
 export const ProjectList = () => {
@@ -13,6 +14,7 @@ export const ProjectList = () => {
   const [editingProject, setEditingProject] = useState<MemberProject | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedMember, setSelectedMember] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [uploadingPdf, setUploadingPdf] = useState(false);
@@ -25,6 +27,7 @@ export const ProjectList = () => {
     startDate: '',
     endDate: '',
     memberId: '',
+    category: 'Others',
     pdfUrl: '',
     pdfFilename: '',
   });
@@ -140,6 +143,7 @@ export const ProjectList = () => {
         start_date: formData.startDate || null,
         end_date: formData.endDate || null,
         member_id: formData.memberId,
+        category: formData.category,
         pdf_url: formData.pdfUrl || null,
         pdf_filename: formData.pdfFilename || null,
       };
@@ -175,6 +179,7 @@ export const ProjectList = () => {
         startDate: '',
         endDate: '',
         memberId: '',
+        category: 'Others',
         pdfUrl: '',
         pdfFilename: '',
       });
@@ -196,6 +201,7 @@ export const ProjectList = () => {
       startDate: project.start_date || '',
       endDate: project.end_date || '',
       memberId: project.member_id,
+      category: project.category || 'Others',
       pdfUrl: project.pdf_url || '',
       pdfFilename: project.pdf_filename || '',
     });
@@ -250,7 +256,8 @@ export const ProjectList = () => {
   const filteredProjects = projects.filter(project => {
     const statusMatch = selectedStatus === 'all' || project.status === selectedStatus;
     const memberMatch = selectedMember === 'all' || project.member_id === selectedMember;
-    return statusMatch && memberMatch;
+    const categoryMatch = selectedCategory === 'all' || project.category === selectedCategory;
+    return statusMatch && memberMatch && categoryMatch;
   });
 
   const getStatusCounts = () => {
@@ -329,6 +336,19 @@ export const ProjectList = () => {
           {teamMembers.map(member => (
             <option key={member.id} value={member.id}>
               {member.role}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+        >
+          <option value="all">All Categories</option>
+          {PROJECT_CATEGORIES.map(category => (
+            <option key={category} value={category}>
+              {category}
             </option>
           ))}
         </select>
@@ -443,6 +463,23 @@ export const ProjectList = () => {
             </div>
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
+            <select
+              name="category"
+              value={formData.category}
+              onChange={handleInputChange}
+              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+              required
+            >
+              {PROJECT_CATEGORIES.map(category => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* PDF Upload Section */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -554,7 +591,7 @@ export const ProjectList = () => {
             No projects found
           </h3>
           <p className="text-gray-500 dark:text-gray-400">
-            {selectedStatus === 'all' && selectedMember === 'all'
+            {selectedStatus === 'all' && selectedMember === 'all' && selectedCategory === 'all'
               ? 'No projects have been created yet.'
               : 'No projects match the selected filters.'
             }
@@ -591,6 +628,13 @@ export const ProjectList = () => {
                     <User size={14} className="text-gray-400 mr-1" />
                     <span className="text-sm text-gray-600 dark:text-gray-400">
                       {getTeamMemberName(project)}
+                    </span>
+                  </div>
+
+                  {/* Category Badge */}
+                  <div className="mb-3">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                      {project.category}
                     </span>
                   </div>
 

@@ -33,6 +33,7 @@ export interface MemberProject {
   created_at: string;
   pdf_url?: string;
   pdf_filename?: string;
+  category: string;
 }
 
 export interface Inquiry {
@@ -53,3 +54,15 @@ export interface Notification {
   read: boolean;
   created_at: string;
 }
+
+// Project categories
+export const PROJECT_CATEGORIES = [
+  'FMCG (Fast-Moving Consumer Goods)',
+  'Food & Beverage / QSR (Quick Service Restaurants)',
+  'Fashion & Lifestyle',
+  'Health, Wellness & Fitness',
+  'Real Estate & Home Interiors',
+  'Others'
+] as const;
+
+export type ProjectCategory = typeof PROJECT_CATEGORIES[number];

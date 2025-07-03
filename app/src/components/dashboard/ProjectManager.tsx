@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase';
 import { uploadPdfToStorage, deletePdfFromStorage } from '../../lib/storage';
 import { useAuthStore } from '../../store/authStore';
 import { PlusCircle, Calendar, Tag, Clock, CheckCircle, Pause, Play, X, Pencil, Trash2, Eye, FileText, Upload } from 'lucide-react';
+import { PROJECT_CATEGORIES } from '../../types';
 import type { MemberProject, TeamMember } from '../../types';
 
 interface ProjectFormData {
@@ -13,6 +14,7 @@ interface ProjectFormData {
   status: 'planning' | 'in_progress' | 'completed' | 'on_hold';
   startDate: string;
   endDate: string;
+  category: string;
   pdfUrl: string;
   pdfFilename: string;
 }
@@ -24,6 +26,7 @@ export const ProjectManager = () => {
   const [isAddingProject, setIsAddingProject] = useState(false);
   const [editingProject, setEditingProject] = useState<MemberProject | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [uploadingPdf, setUploadingPdf] = useState(false);
@@ -35,6 +38,7 @@ export const ProjectManager = () => {
     status: 'planning',
     startDate: '',
     endDate: '',
+    category: 'Others',
     pdfUrl: '',
     pdfFilename: '',
   });
@@ -163,6 +167,7 @@ export const ProjectManager = () => {
       status: 'planning',
       startDate: '',
       endDate: '',
+      category: 'Others',
       pdfUrl: '',
       pdfFilename: '',
     });
@@ -188,6 +193,7 @@ export const ProjectManager = () => {
         start_date: formData.startDate || null,
         end_date: formData.endDate || null,
         member_id: teamMember.id,
+        category: formData.category,
         pdf_url: formData.pdfUrl || null,
         pdf_filename: formData.pdfFilename || null,
       };
@@ -230,6 +236,7 @@ export const ProjectManager = () => {
       status: project.status,
       startDate: project.start_date || '',
       endDate: project.end_date || '',
+      category: project.category || 'Others',
       pdfUrl: project.pdf_url || '',
       pdfFilename: project.pdf_filename || '',
     });
@@ -264,17 +271,19 @@ export const ProjectManager = () => {
     }
   };
 
-  const handleViewPdf = (pdfUrl: string) => {
-    window.open(pdfUrl, '_blank');
-  };
-
   const getStatusConfig = (status: string) => {
     return statusOptions.find(option => option.value === status) || statusOptions[0];
   };
 
-  const filteredProjects = selectedStatus === 'all'
-    ? projects
-    : projects.filter(project => project.status === selectedStatus);
+  const handleViewPdf = (pdfUrl: string) => {
+    window.open(pdfUrl, '_blank');
+  };
+
+  const filteredProjects = projects.filter(project => {
+    const statusMatch = selectedStatus === 'all' || project.status === selectedStatus;
+    const categoryMatch = selectedCategory === 'all' || project.category === selectedCategory;
+    return statusMatch && categoryMatch;
+  });
 
   const getStatusCounts = () => {
     return {
@@ -317,6 +326,18 @@ export const ProjectManager = () => {
             <option value="in_progress">In Progress ({statusCounts.in_progress})</option>
             <option value="completed">Completed ({statusCounts.completed})</option>
             <option value="on_hold">On Hold ({statusCounts.on_hold})</option>
+          </select>
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+          >
+            <option value="all">All Categories</option>
+            {PROJECT_CATEGORIES.map(category => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
           </select>
           <button
             onClick={() => setIsAddingProject(true)}
@@ -409,16 +430,35 @@ export const ProjectManager = () => {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Image URL</label>
-              <input
-                type="url"
-                name="imageUrl"
-                value={formData.imageUrl}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
-                placeholder="https://example.com/image.jpg"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Image URL</label>
+                <input
+                  type="url"
+                  name="imageUrl"
+                  value={formData.imageUrl}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
+                <select
+                  name="category"
+                  value={formData.category}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                  required
+                >
+                  {PROJECT_CATEGORIES.map(category => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             {/* PDF Upload Section */}
@@ -536,9 +576,9 @@ export const ProjectManager = () => {
             No projects found
           </h3>
           <p className="text-gray-500 dark:text-gray-400">
-            {selectedStatus === 'all' 
+            {selectedStatus === 'all' && selectedCategory === 'all'
               ? 'Start by adding your first project.'
-              : `No projects with status "${selectedStatus.replace('_', ' ')}" found.`
+              : 'No projects match the selected filters.'
             }
           </p>
         </div>
@@ -566,6 +606,13 @@ export const ProjectManager = () => {
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusConfig.color}`}>
                       {statusConfig.icon}
                       <span className="ml-1">{statusConfig.label}</span>
+                    </span>
+                  </div>
+
+                  {/* Category Badge */}
+                  <div className="mb-3">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                      {project.category}
                     </span>
                   </div>
 

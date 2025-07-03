@@ -33,7 +33,7 @@ export const Header = () => {
               <Link to="/about" className="text-neutral-700 dark:text-neutral-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">About</Link>
               <Link to="/contact" className="text-neutral-700 dark:text-neutral-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">Contact</Link>
               
-              {user ? (
+              {user && (
                 <>
                   {isAdmin && (
                     <Link to="/admin" className="text-neutral-700 dark:text-neutral-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">Admin</Link>
@@ -49,16 +49,6 @@ export const Header = () => {
                     <span>Sign Out</span>
                   </button>
                 </>
-              ) : (
-                <Link
-                  to="/login"
-                  className="relative px-6 py-2 rounded-full overflow-hidden group transition-all duration-300 
-                            text-white bg-gradient-to-r from-primary-500 to-accent-500 
-                            hover:from-primary-600 hover:to-accent-600 
-                            dark:bg-white dark:text-black dark:bg-none dark:hover:bg-gray-100"
-                >
-                  <span className="relative font-medium">Sign In</span>
-                </Link>
               )}
             </nav>
 
@@ -90,7 +80,7 @@ export const Header = () => {
               <Link to="/about" className="block text-neutral-700 dark:text-neutral-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">About</Link>
               <Link to="/contact" className="block text-neutral-700 dark:text-neutral-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">Contact</Link>
               
-              {user ? (
+              {user && (
                 <>
                   {isAdmin && (
                     <Link to="/admin" className="block text-neutral-700 dark:text-neutral-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">Admin</Link>
@@ -106,16 +96,6 @@ export const Header = () => {
                     <span>Sign Out</span>
                   </button>
                 </>
-              ) : (
-                <Link
-                  to="/login"
-                  className="block relative px-6 py-2 rounded-full overflow-hidden group transition-all duration-300 
-                            text-white bg-gradient-to-r from-primary-500 to-accent-500 
-                            hover:from-primary-600 hover:to-accent-600 
-                            dark:bg-white dark:text-black dark:bg-none dark:hover:bg-gray-100"
-                >
-                  <span className="relative font-medium">Sign In</span>
-                </Link>
               )}
             </nav>
           )}

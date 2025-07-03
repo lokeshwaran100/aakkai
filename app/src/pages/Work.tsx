@@ -6,7 +6,8 @@ import { supabase } from '../lib/supabase';
 import type { MemberProject } from '../types';
 
 export const Work = () => {
-  const [selectedTab, setSelectedTab] = useState('all');
+  const [selectedTab, setSelectedTab] = useState('client');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [projects, setProjects] = useState<MemberProject[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -87,30 +88,6 @@ export const Work = () => {
     },
   ];
 
-  // Group projects by work type
-  const workCategories = [
-    { 
-      name: 'Brand Identity', 
-      count: projects.filter(p => p.tags.some(tag => tag.toLowerCase().includes('brand') || tag.toLowerCase().includes('identity'))).length,
-      projects: projects.filter(p => p.tags.some(tag => tag.toLowerCase().includes('brand') || tag.toLowerCase().includes('identity')))
-    },
-    { 
-      name: 'Digital Design', 
-      count: projects.filter(p => p.tags.some(tag => tag.toLowerCase().includes('ui') || tag.toLowerCase().includes('ux') || tag.toLowerCase().includes('web'))).length,
-      projects: projects.filter(p => p.tags.some(tag => tag.toLowerCase().includes('ui') || tag.toLowerCase().includes('ux') || tag.toLowerCase().includes('web')))
-    },
-    { 
-      name: 'Mobile Apps', 
-      count: projects.filter(p => p.tags.some(tag => tag.toLowerCase().includes('mobile') || tag.toLowerCase().includes('app'))).length,
-      projects: projects.filter(p => p.tags.some(tag => tag.toLowerCase().includes('mobile') || tag.toLowerCase().includes('app')))
-    },
-    { 
-      name: 'E-commerce', 
-      count: projects.filter(p => p.tags.some(tag => tag.toLowerCase().includes('ecommerce') || tag.toLowerCase().includes('e-commerce'))).length,
-      projects: projects.filter(p => p.tags.some(tag => tag.toLowerCase().includes('ecommerce') || tag.toLowerCase().includes('e-commerce')))
-    },
-  ];
-
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -125,6 +102,107 @@ export const Work = () => {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0 }
   };
+
+  const handleCategoryClick = (categoryName: string) => {
+    setSelectedCategory(categoryName);
+  };
+
+  const handleBackToCategories = () => {
+    setSelectedCategory(null);
+  };
+
+  const renderProjectCards = (categoryProjects: MemberProject[]) => (
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+    >
+      {categoryProjects.map((project) => (
+        <motion.div
+          key={project.id}
+          variants={item}
+          className="group bg-white dark:bg-gray-800/30 backdrop-blur-lg rounded-lg overflow-hidden border border-gray-200/50 dark:border-gray-700/50 shadow-sm hover:shadow-lg transition-shadow"
+        >
+          <div className="relative overflow-hidden">
+            <img
+              src={project.image_url || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80'}
+              alt={project.title}
+              className="object-cover w-full h-48 transform group-hover:scale-110 transition-transform duration-500"
+            />
+            <div className="absolute top-4 right-4">
+              {getStatusIcon(project.status)}
+            </div>
+          </div>
+          
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">
+                {project.title}
+              </h3>
+              {project.pdf_url && (
+                <button
+                  onClick={() => handleViewPdf(project.pdf_url!)}
+                  className="flex items-center space-x-1 px-2 py-1 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 rounded-full text-xs hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
+                  title="View PDF"
+                >
+                  <FileText size={12} />
+                  <span>PDF</span>
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center mb-3">
+              <User size={14} className="text-gray-400 mr-1" />
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                {getTeamMemberName(project)}
+              </span>
+            </div>
+
+            <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+              {project.description}
+            </p>
+
+            {project.tags.length > 0 && (
+              <div className="mb-4">
+                <div className="flex flex-wrap gap-1">
+                  {project.tags.slice(0, 3).map((tag, index) => (
+                    <span
+                      key={index}
+                      className="inline-flex items-center px-2 py-1 bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 text-xs rounded-full"
+                    >
+                      <Tag size={10} className="mr-1" />
+                      {tag}
+                    </span>
+                  ))}
+                  {project.tags.length > 3 && (
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      +{project.tags.length - 3} more
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {(project.start_date || project.end_date) && (
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                <div className="flex items-center">
+                  <Calendar size={14} className="mr-1" />
+                  {project.start_date && (
+                    <span>{new Date(project.start_date).toLocaleDateString()}</span>
+                  )}
+                  {project.start_date && project.end_date && <span className="mx-1">-</span>}
+                  {project.end_date && (
+                    <span>{new Date(project.end_date).toLocaleDateString()}</span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </motion.div>
+      ))}
+    </motion.div>
+  );
 
   if (loading) {
     return (
@@ -160,17 +238,6 @@ export const Work = () => {
               Type of Client
             </TabsTrigger>
             <TabsTrigger
-              value="work"
-              className={`px-4 py-2 text-lg font-medium transition-colors duration-200 ${
-                selectedTab === 'work'
-                  ? 'text-gray-900 dark:text-white border-b-2 border-primary-500'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-              }`}
-              onClick={() => setSelectedTab('work')}
-            >
-              Type of Work
-            </TabsTrigger>
-            <TabsTrigger
               value="all"
               className={`px-4 py-2 text-lg font-medium transition-colors duration-200 ${
                 selectedTab === 'all'
@@ -184,171 +251,81 @@ export const Work = () => {
           </TabsList>
 
           <TabsContent value="client">
-            <motion.div
-              variants={container}
-              initial="hidden"
-              animate="show"
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            >
-              {clientCategories.map((category) => (
-                <motion.div
-                  key={category.name}
-                  variants={item}
-                  className="group relative overflow-hidden rounded-lg"
-                >
-                  <div className="aspect-w-16 aspect-h-9">
-                    <img
-                      src={category.image}
-                      alt={category.name}
-                      className="object-cover w-full h-64 transform group-hover:scale-110 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent">
-                    <div className="absolute bottom-0 left-0 p-6">
-                      <h3 className="text-xl font-semibold text-white mb-2">{category.name}</h3>
-                      <p className="text-gray-300">
-                        {category.projects.length} Projects
+            {selectedCategory ? (
+              <div className="space-y-6">
+                {/* Back button and category header */}
+                <div className="flex items-center space-x-4">
+                  <button
+                    onClick={handleBackToCategories}
+                    className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <ArrowRight size={16} className="rotate-180" />
+                    <span>Back to Categories</span>
+                  </button>
+                  <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+                    {selectedCategory}
+                  </h2>
+                </div>
+
+                {/* Project cards for selected category */}
+                {(() => {
+                  const category = clientCategories.find(cat => cat.name === selectedCategory);
+                  return category && category.projects.length > 0 ? (
+                    renderProjectCards(category.projects)
+                  ) : (
+                    <div className="text-center py-12">
+                      <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                        No projects found
+                      </h3>
+                      <p className="text-gray-500 dark:text-gray-400">
+                        No completed projects in this category yet.
                       </p>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </TabsContent>
-
-          <TabsContent value="work">
-            <motion.div
-              variants={container}
-              initial="hidden"
-              animate="show"
-              className="grid grid-cols-1 md:grid-cols-2 gap-8"
-            >
-              {workCategories.map((category) => (
-                <motion.div
-                  key={category.name}
-                  variants={item}
-                  className="bg-white dark:bg-gray-800/30 backdrop-blur-lg rounded-lg p-6 space-y-4 border border-gray-200/50 dark:border-gray-700/50 shadow-sm"
-                >
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{category.name}</h3>
-                    <span className="text-gray-500 dark:text-gray-400">{category.count} Projects</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    {category.projects.slice(0, 4).map(work => (
-                      <div key={work.id} className="relative overflow-hidden rounded-lg">
-                        <img
-                          src={work.image_url || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80'}
-                          alt={work.title}
-                          className="w-full h-32 object-cover"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent">
-                          <div className="absolute bottom-0 left-0 p-3">
-                            <h4 className="text-sm font-medium text-white">{work.title}</h4>
-                          </div>
+                  );
+                })()}
+              </div>
+            ) : (
+              /* Category overview */
+              <motion.div
+                variants={container}
+                initial="hidden"
+                animate="show"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              >
+                {clientCategories.map((category) => (
+                  <motion.div
+                    key={category.name}
+                    variants={item}
+                    className="group relative overflow-hidden rounded-lg cursor-pointer"
+                    onClick={() => handleCategoryClick(category.name)}
+                  >
+                    <div className="aspect-w-16 aspect-h-9">
+                      <img
+                        src={category.image}
+                        alt={category.name}
+                        className="object-cover w-full h-64 transform group-hover:scale-110 transition-transform duration-500"
+                      />
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent group-hover:from-gray-900/90 transition-all duration-300">
+                      <div className="absolute bottom-0 left-0 p-6">
+                        <h3 className="text-xl font-semibold text-white mb-2">{category.name}</h3>
+                        <p className="text-gray-300 mb-3">
+                          {category.projects.length} Projects
+                        </p>
+                        <div className="flex items-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <span className="text-sm font-medium">View Projects</span>
+                          <ArrowRight size={16} className="ml-2" />
                         </div>
                       </div>
-                    ))}
-                  </div>
-                  <button className="flex items-center space-x-2 text-primary-500 dark:text-primary-400 hover:text-primary-600 dark:hover:text-primary-300 transition-colors">
-                    <span>View All</span>
-                    <ArrowRight size={16} />
-                  </button>
-                </motion.div>
-              ))}
-            </motion.div>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
           </TabsContent>
 
           <TabsContent value="all">
-            <motion.div
-              variants={container}
-              initial="hidden"
-              animate="show"
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            >
-              {projects.map((project) => (
-                <motion.div
-                  key={project.id}
-                  variants={item}
-                  className="group bg-white dark:bg-gray-800/30 backdrop-blur-lg rounded-lg overflow-hidden border border-gray-200/50 dark:border-gray-700/50 shadow-sm hover:shadow-lg transition-shadow"
-                >
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={project.image_url || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80'}
-                      alt={project.title}
-                      className="object-cover w-full h-48 transform group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute top-4 right-4">
-                      {getStatusIcon(project.status)}
-                    </div>
-                  </div>
-                  
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">
-                        {project.title}
-                      </h3>
-                      {project.pdf_url && (
-                        <button
-                          onClick={() => handleViewPdf(project.pdf_url!)}
-                          className="flex items-center space-x-1 px-2 py-1 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 rounded-full text-xs hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
-                          title="View PDF"
-                        >
-                          <FileText size={12} />
-                          <span>PDF</span>
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="flex items-center mb-3">
-                      <User size={14} className="text-gray-400 mr-1" />
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
-                        {getTeamMemberName(project)}
-                      </span>
-                    </div>
-
-                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
-                      {project.description}
-                    </p>
-
-                    {project.tags.length > 0 && (
-                      <div className="mb-4">
-                        <div className="flex flex-wrap gap-1">
-                          {project.tags.slice(0, 3).map((tag, index) => (
-                            <span
-                              key={index}
-                              className="inline-flex items-center px-2 py-1 bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 text-xs rounded-full"
-                            >
-                              <Tag size={10} className="mr-1" />
-                              {tag}
-                            </span>
-                          ))}
-                          {project.tags.length > 3 && (
-                            <span className="text-xs text-gray-500 dark:text-gray-400">
-                              +{project.tags.length - 3} more
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {(project.start_date || project.end_date) && (
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        <div className="flex items-center">
-                          <Calendar size={14} className="mr-1" />
-                          {project.start_date && (
-                            <span>{new Date(project.start_date).toLocaleDateString()}</span>
-                          )}
-                          {project.start_date && project.end_date && <span className="mx-1">-</span>}
-                          {project.end_date && (
-                            <span>{new Date(project.end_date).toLocaleDateString()}</span>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
+            {renderProjectCards(projects)}
           </TabsContent>
         </Tabs>
 

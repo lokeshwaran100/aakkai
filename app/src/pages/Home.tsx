@@ -3,30 +3,6 @@ import { ArrowRight, Palette, Lightbulb, Target, Sparkles, ChevronDown } from 'l
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
-const testimonials = [
-  {
-    name: "Sarah Chen",
-    role: "Creative Director",
-    company: "DesignCraft Studios",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80",
-    quote: "Aakkai transformed our brand identity completely. Their strategic approach and attention to detail exceeded our expectations."
-  },
-  {
-    name: "Marcus Rodriguez",
-    role: "CEO",
-    company: "TechFlow",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80",
-    quote: "The UI/UX design they delivered increased our user engagement by 200%. Their team is incredibly talented and professional."
-  },
-  {
-    name: "Emily Watson",
-    role: "Marketing Director",
-    company: "Innovate Inc",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80",
-    quote: "Working with Aakkai was a game-changer for our digital presence. They truly understand modern design trends."
-  }
-];
-
 const faqs = [
   {
     question: "What services do you offer?",
@@ -144,48 +120,6 @@ export const Home = () => {
                 Optimize user journeys and interactions to maximize engagement and conversion rates.
               </p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-32 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-neutral-50 via-accent-50/10 to-neutral-50 dark:from-gray-900 dark:via-accent-900/10 dark:to-gray-900"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary-400 via-accent-400 to-neon-400 dark:bg-none dark:text-white">
-              Client Success Stories
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Don't just take our word for it. Here's what our clients have to say about working with us.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.2 }}
-                viewport={{ once: true }}
-                className="bg-white dark:bg-gray-800/30 backdrop-blur-lg rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm"
-              >
-                <div className="flex items-center space-x-4 mb-6">
-                  <img
-                    src={testimonial.image}
-                    alt={testimonial.name}
-                    className="w-16 h-16 rounded-full object-cover border-2 border-accent-500"
-                  />
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{testimonial.name}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{testimonial.role}</p>
-                    <p className="text-sm text-accent-500">{testimonial.company}</p>
-                  </div>
-                </div>
-                <p className="text-gray-600 dark:text-gray-300 italic">&ldquo;{testimonial.quote}&rdquo;</p>
-              </motion.div>
-            ))}
           </div>
         </div>
       </section>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Send, CheckCircle } from 'lucide-react';
+import { Mail, Phone, Send, CheckCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 export const Contact = () => {
@@ -96,22 +96,6 @@ export const Contact = () => {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Phone</h3>
                     <p className="text-gray-600 dark:text-gray-300">+1 (555) 123-4567</p>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.4 }}
-                className="bg-white dark:bg-gray-800/30 backdrop-blur-lg rounded-xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-sm"
-              >
-                <div className="flex items-center space-x-4">
-                  <MapPin className="text-primary-500" size={24} />
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Location</h3>
-                    <p className="text-gray-600 dark:text-gray-300">123 Design Street, Creative City, 12345</p>
                   </div>
                 </div>
               </motion.div>

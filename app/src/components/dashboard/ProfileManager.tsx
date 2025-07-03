@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import { uploadProfileImageToStorage, deleteProfileImageFromStorage } from '../../lib/storage';
 import { useAuthStore } from '../../store/authStore';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, XCircle, Upload, Camera, X } from 'lucide-react';
 import type { TeamMember } from '../../types';
 
 export const ProfileManager = () => {
@@ -11,6 +12,7 @@ export const ProfileManager = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdatingAvailability, setIsUpdatingAvailability] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     expertise: [] as string[],
@@ -169,6 +171,65 @@ export const ProfileManager = () => {
     }));
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError('Please select an image file');
+      return;
+    }
+
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image file size must be less than 5MB');
+      return;
+    }
+
+    setUploadingImage(true);
+    setError(null);
+
+    try {
+      // Delete old image if it exists
+      if (formData.imageUrl) {
+        await deleteProfileImageFromStorage(formData.imageUrl);
+      }
+
+      // Upload new image
+      const result = await uploadProfileImageToStorage(file, user.id);
+      
+      if (result) {
+        setFormData(prev => ({
+          ...prev,
+          imageUrl: result.url,
+        }));
+      } else {
+        throw new Error('Failed to upload image');
+      }
+    } catch (err: any) {
+      console.error('Error uploading image:', err);
+      setError('Failed to upload image. Please try again.');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleRemoveImage = async () => {
+    if (!formData.imageUrl) return;
+
+    try {
+      await deleteProfileImageFromStorage(formData.imageUrl);
+      setFormData(prev => ({
+        ...prev,
+        imageUrl: '',
+      }));
+    } catch (err: any) {
+      console.error('Error removing image:', err);
+      setError('Failed to remove image. Please try again.');
+    }
+  };
+
   const handleAvailabilityToggle = async () => {
     if (!profile) return;
 
@@ -316,6 +377,57 @@ export const ProfileManager = () => {
             </p>
           </div>
 
+          {/* Profile Image Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              Profile Image
+            </label>
+            <div className="flex items-start space-x-4">
+              {/* Current Image Preview */}
+              <div className="flex-shrink-0">
+                {formData.imageUrl ? (
+                  <div className="relative">
+                    <img
+                      src={formData.imageUrl}
+                      alt="Profile"
+                      className="w-24 h-24 rounded-full object-cover border-2 border-gray-300 dark:border-gray-600"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                      title="Remove image"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border-2 border-gray-300 dark:border-gray-600">
+                    <Camera className="text-gray-400 dark:text-gray-500" size={24} />
+                  </div>
+                )}
+              </div>
+
+              {/* Upload Controls */}
+              <div className="flex-1 space-y-2">
+                <label className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                  <Upload size={16} />
+                  <span>{uploadingImage ? 'Uploading...' : 'Upload Image'}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    disabled={uploadingImage}
+                  />
+                </label>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Recommended: Square image, max 5MB (JPG, PNG, GIF)
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
               Expertise
@@ -350,18 +462,6 @@ export const ProfileManager = () => {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Profile Image URL</label>
-            <input
-              type="url"
-              name="imageUrl"
-              value={formData.imageUrl}
-              onChange={handleInputChange}
-              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
-              placeholder="https://example.com/your-image.jpg"
-            />
-          </div>
-
           <div className="flex justify-end space-x-3">
             <button
               type="button"
@@ -380,54 +480,27 @@ export const ProfileManager = () => {
         </form>
       ) : (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-          {profile.image_url && (
-            <img
-              src={profile.image_url}
-              alt={profile.role}
-              className="w-full h-64 object-cover"
-            />
-          )}
+          {/* Profile Header with Image */}
           <div className="p-6">
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Name</h4>
-              <p className="mt-1 text-lg font-semibold text-gray-900 dark:text-white">{getUserDisplayName()}</p>
-            </div>
-            
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Role</h4>
-              <p className="mt-1 text-lg text-gray-900 dark:text-white">{profile.role}</p>
-            </div>
-            
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Expertise</h4>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {profile.expertise && profile.expertise.length > 0 ? (
-                  profile.expertise.map((exp, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 rounded-full text-sm"
-                    >
-                      {exp}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-gray-500 dark:text-gray-400 text-sm">No expertise specified</span>
-                )}
-              </div>
-            </div>
-            
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Experience</h4>
-              <p className="mt-2 text-gray-600 dark:text-gray-400">
-                {profile.experience || 'No experience description provided'}
-              </p>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2">Current Status:</span>
+            <div className="flex items-start space-x-6 mb-6">
+              {profile.image_url ? (
+                <img
+                  src={profile.image_url}
+                  alt={profile.role}
+                  className="w-24 h-24 rounded-full object-cover border-4 border-primary-500"
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border-4 border-gray-300 dark:border-gray-600">
+                  <Camera className="text-gray-400 dark:text-gray-500" size={32} />
+                </div>
+              )}
+              <div className="flex-1">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  {getUserDisplayName()}
+                </h3>
+                <p className="text-lg text-gray-600 dark:text-gray-400 mb-3">{profile.role}</p>
                 <span
-                  className={`flex items-center space-x-1 px-3 py-1 rounded-full text-sm ${
+                  className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-sm ${
                     profile.is_available
                       ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                       : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
@@ -441,6 +514,40 @@ export const ProfileManager = () => {
                   <span>{profile.is_available ? 'Available for projects' : 'Not available'}</span>
                 </span>
               </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Expertise</h4>
+                <div className="flex flex-wrap gap-2">
+                  {profile.expertise && profile.expertise.length > 0 ? (
+                    profile.expertise.map((exp, index) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1 bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 rounded-full text-sm"
+                      >
+                        {exp}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-gray-500 dark:text-gray-400 text-sm">No expertise specified</span>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Projects Collaborated</h4>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {profile.projects_collaborated || 0}
+                </p>
+              </div>
+            </div>
+            
+            <div className="mt-6">
+              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Experience</h4>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                {profile.experience || 'No experience description provided'}
+              </p>
             </div>
           </div>
         </div>

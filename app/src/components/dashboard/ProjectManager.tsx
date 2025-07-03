@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
+import { uploadPdfToStorage, deletePdfFromStorage } from '../../lib/storage';
 import { useAuthStore } from '../../store/authStore';
 import { PlusCircle, Calendar, Tag, Clock, CheckCircle, Pause, Play, X, Pencil, Trash2, Eye, FileText, Upload } from 'lucide-react';
 import type { MemberProject, TeamMember } from '../../types';
@@ -134,16 +135,17 @@ export const ProjectManager = () => {
     setError(null);
 
     try {
-      // For demo purposes, we'll use a placeholder URL
-      // In a real implementation, you would upload to Supabase Storage or another service
-      const fileName = `${Date.now()}-${file.name}`;
-      const pdfUrl = `https://example.com/pdfs/${fileName}`;
-
-      setFormData(prev => ({
-        ...prev,
-        pdfUrl: pdfUrl,
-        pdfFilename: file.name,
-      }));
+      const result = await uploadPdfToStorage(file, editingProject?.id);
+      
+      if (result) {
+        setFormData(prev => ({
+          ...prev,
+          pdfUrl: result.url,
+          pdfFilename: result.filename,
+        }));
+      } else {
+        throw new Error('Failed to upload PDF');
+      }
     } catch (err: any) {
       console.error('Error uploading PDF:', err);
       setError('Failed to upload PDF. Please try again.');
@@ -191,6 +193,11 @@ export const ProjectManager = () => {
       };
 
       if (editingProject) {
+        // If we're editing and there's a new PDF, delete the old one
+        if (editingProject.pdf_url && formData.pdfUrl && editingProject.pdf_url !== formData.pdfUrl) {
+          await deletePdfFromStorage(editingProject.pdf_url);
+        }
+
         const { error } = await supabase
           .from('member_projects')
           .update(projectData)
@@ -235,12 +242,20 @@ export const ProjectManager = () => {
     }
 
     try {
+      // Find the project to get PDF URL for deletion
+      const project = projects.find(p => p.id === id);
+      
       const { error } = await supabase
         .from('member_projects')
         .delete()
         .eq('id', id);
 
       if (error) throw error;
+
+      // Delete PDF from storage if it exists
+      if (project?.pdf_url) {
+        await deletePdfFromStorage(project.pdf_url);
+      }
 
       fetchProjects();
     } catch (err: any) {

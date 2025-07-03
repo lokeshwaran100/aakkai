@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { PlusCircle, Pencil, Trash2, CheckCircle, XCircle, Mail, User, X } from 'lucide-react';
+import { PlusCircle, Pencil, Trash2, CheckCircle, XCircle, Mail, User, X, Briefcase } from 'lucide-react';
 import type { TeamMember } from '../../types';
 
 interface EditDialogProps {
@@ -18,6 +18,7 @@ const EditDialog: React.FC<EditDialogProps> = ({ member, isOpen, onClose, onSave
     experience: '',
     imageUrl: '',
     isAvailable: true,
+    projectsCollaborated: 0,
   });
 
   const serviceOptions = ['Branding', 'UI/UX Designing'];
@@ -31,6 +32,7 @@ const EditDialog: React.FC<EditDialogProps> = ({ member, isOpen, onClose, onSave
         experience: member.experience,
         imageUrl: member.image_url || '',
         isAvailable: member.is_available,
+        projectsCollaborated: member.projects_collaborated || 0,
       });
     }
   }, [member]);
@@ -49,7 +51,8 @@ const EditDialog: React.FC<EditDialogProps> = ({ member, isOpen, onClose, onSave
     const { name, value, type } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : 
+               type === 'number' ? parseInt(value) || 0 : value,
     }));
   };
 
@@ -72,6 +75,7 @@ const EditDialog: React.FC<EditDialogProps> = ({ member, isOpen, onClose, onSave
         experience: formData.experience,
         image_url: formData.imageUrl,
         is_available: formData.isAvailable,
+        projects_collaborated: formData.projectsCollaborated,
       };
       onSave(updatedMember);
     }
@@ -159,6 +163,19 @@ const EditDialog: React.FC<EditDialogProps> = ({ member, isOpen, onClose, onSave
           </div>
 
           <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Projects Collaborated</label>
+            <input
+              type="number"
+              name="projectsCollaborated"
+              value={formData.projectsCollaborated}
+              onChange={handleInputChange}
+              min="0"
+              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+              placeholder="Number of projects"
+            />
+          </div>
+
+          <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Image URL</label>
             <input
               type="url"
@@ -217,6 +234,7 @@ export const TeamMemberList = () => {
     expertise: [] as string[],
     experience: '',
     imageUrl: '',
+    projectsCollaborated: 0,
   });
 
   const serviceOptions = ['Branding', 'UI/UX Designing'];
@@ -249,8 +267,11 @@ export const TeamMemberList = () => {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    setFormData(prev => ({ 
+      ...prev, 
+      [name]: type === 'number' ? parseInt(value) || 0 : value 
+    }));
   };
 
   const handleExpertiseChange = (service: string) => {
@@ -271,6 +292,7 @@ export const TeamMemberList = () => {
         expertise: formData.expertise,
         experience: formData.experience,
         image_url: formData.imageUrl,
+        projects_collaborated: formData.projectsCollaborated,
         is_available: true,
       };
 
@@ -283,7 +305,7 @@ export const TeamMemberList = () => {
       }
 
       setIsAddingMember(false);
-      setFormData({ name: '', role: '', expertise: [], experience: '', imageUrl: '' });
+      setFormData({ name: '', role: '', expertise: [], experience: '', imageUrl: '', projectsCollaborated: 0 });
       fetchTeamMembers();
     } catch (err: any) {
       console.error('Error adding team member:', err);
@@ -306,6 +328,7 @@ export const TeamMemberList = () => {
           experience: updatedMember.experience,
           image_url: updatedMember.image_url,
           is_available: updatedMember.is_available,
+          projects_collaborated: updatedMember.projects_collaborated,
         })
         .eq('id', updatedMember.id);
 
@@ -465,6 +488,19 @@ export const TeamMemberList = () => {
           </div>
 
           <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Projects Collaborated</label>
+            <input
+              type="number"
+              name="projectsCollaborated"
+              value={formData.projectsCollaborated}
+              onChange={handleInputChange}
+              min="0"
+              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+              placeholder="Number of projects"
+            />
+          </div>
+
+          <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Image URL</label>
             <input
               type="url"
@@ -480,7 +516,7 @@ export const TeamMemberList = () => {
               type="button"
               onClick={() => {
                 setIsAddingMember(false);
-                setFormData({ name: '', role: '', expertise: [], experience: '', imageUrl: '' });
+                setFormData({ name: '', role: '', expertise: [], experience: '', imageUrl: '', projectsCollaborated: 0 });
               }}
               className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
@@ -526,6 +562,12 @@ export const TeamMemberList = () => {
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Availability
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <div className="flex items-center">
+                      <Briefcase size={16} className="mr-2" />
+                      Projects
+                    </div>
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     <div className="flex items-center">
@@ -595,6 +637,17 @@ export const TeamMemberList = () => {
                         )}
                         {member.is_available ? 'Available' : 'Unavailable'}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <Briefcase className="mr-2 text-gray-400" size={16} />
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {member.projects_collaborated || 0}
+                        </span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">
+                          projects
+                        </span>
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <a

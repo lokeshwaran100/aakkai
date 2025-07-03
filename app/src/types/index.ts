@@ -6,6 +6,7 @@ export interface TeamMember {
   experience: string;
   image_url?: string;
   is_available: boolean;
+  projects_collaborated: number;
   created_at: string;
 }
 

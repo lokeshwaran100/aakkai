@@ -43,25 +43,30 @@ export const useAuthStore = create<AuthStore>()(
         
         try {
           // Check if user role exists in database
-          const { data: existingRole } = await supabase
+          const { data: existingRole, error: roleError } = await supabase
             .from('user_roles')
             .select('role')
             .eq('user_id', user.id)
-            .single();
+            .maybeSingle();
+
+          if (roleError && roleError.code !== 'PGRST116') {
+            console.error('Error checking user role:', roleError);
+          }
 
           if (!existingRole) {
             // Create user role based on email
             const role = isAdmin ? 'admin' : 'team_member';
             
-            const { error } = await supabase
+            const { error: insertError } = await supabase
               .from('user_roles')
               .insert([{
                 user_id: user.id,
                 role: role
               }]);
 
-            if (error) {
-              console.error('Error creating user role:', error);
+            if (insertError) {
+              console.error('Error creating user role:', insertError);
+              // Don't throw error, just log it and continue
             }
           }
 
@@ -73,14 +78,18 @@ export const useAuthStore = create<AuthStore>()(
 
           // Create team member profile if user is team member and doesn't have one
           if (!isAdmin) {
-            const { data: existingProfile } = await supabase
+            const { data: existingProfile, error: profileError } = await supabase
               .from('team_members')
               .select('id')
               .eq('user_id', user.id)
-              .single();
+              .maybeSingle();
+
+            if (profileError && profileError.code !== 'PGRST116') {
+              console.error('Error checking team member profile:', profileError);
+            }
 
             if (!existingProfile) {
-              const { error: profileError } = await supabase
+              const { error: profileInsertError } = await supabase
                 .from('team_members')
                 .insert([{
                   user_id: user.id,
@@ -91,13 +100,19 @@ export const useAuthStore = create<AuthStore>()(
                   projects_collaborated: 0
                 }]);
 
-              if (profileError) {
-                console.error('Error creating team member profile:', profileError);
+              if (profileInsertError) {
+                console.error('Error creating team member profile:', profileInsertError);
+                // Don't throw error, just log it
               }
             }
           }
         } catch (error) {
           console.error('Error in checkRole:', error);
+          // Set role state based on email even if database operations fail
+          set({ 
+            isAdmin: isAdmin,
+            isTeamMember: !isAdmin
+          });
         }
       },
       signInWithGoogle: async () => {

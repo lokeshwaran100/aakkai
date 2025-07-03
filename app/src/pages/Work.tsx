@@ -10,6 +10,7 @@ export const Work = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [projects, setProjects] = useState<MemberProject[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProjects();
@@ -17,6 +18,10 @@ export const Work = () => {
 
   const fetchProjects = async () => {
     try {
+      setLoading(true);
+      setError(null);
+
+      // Fetch completed projects - this should work for public users too
       const { data, error } = await supabase
         .from('member_projects')
         .select(`
@@ -32,12 +37,15 @@ export const Work = () => {
 
       if (error) {
         console.error('Error fetching projects:', error);
+        setError('Failed to load projects. Please try again later.');
         return;
       }
 
+      console.log('Fetched projects:', data);
       setProjects(data || []);
     } catch (err) {
       console.error('Error fetching projects:', err);
+      setError('Failed to load projects. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -45,9 +53,9 @@ export const Work = () => {
 
   const getTeamMemberName = (project: any) => {
     if (project.team_members?.role === 'Creative Director') {
-      return 'Admin User';
+      return 'Creative Director';
     } else if (project.team_members?.role === 'Senior Designer') {
-      return 'Team Member';
+      return 'Senior Designer';
     }
     return project.team_members?.role || 'Team Member';
   };
@@ -69,22 +77,36 @@ export const Work = () => {
     window.open(pdfUrl, '_blank');
   };
 
-  // Group projects by client category (based on team member expertise)
+  // Group projects by client category (based on tags)
   const clientCategories = [
     { 
       name: 'Branding Projects', 
       image: 'https://images.unsplash.com/photo-1594968973184-9040a5a79963?auto=format&fit=crop&q=80',
-      projects: projects.filter(p => p.tags.some(tag => tag.toLowerCase().includes('brand')))
+      projects: projects.filter(p => p.tags.some(tag => 
+        tag.toLowerCase().includes('brand') || 
+        tag.toLowerCase().includes('logo') || 
+        tag.toLowerCase().includes('identity')
+      ))
     },
     { 
       name: 'UI/UX Projects', 
       image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80',
-      projects: projects.filter(p => p.tags.some(tag => tag.toLowerCase().includes('ui') || tag.toLowerCase().includes('ux')))
+      projects: projects.filter(p => p.tags.some(tag => 
+        tag.toLowerCase().includes('ui') || 
+        tag.toLowerCase().includes('ux') || 
+        tag.toLowerCase().includes('app') ||
+        tag.toLowerCase().includes('dashboard')
+      ))
     },
     { 
       name: 'Digital Design', 
       image: 'https://images.unsplash.com/photo-1568667256549-094345857637?auto=format&fit=crop&q=80',
-      projects: projects.filter(p => p.tags.some(tag => tag.toLowerCase().includes('web') || tag.toLowerCase().includes('mobile')))
+      projects: projects.filter(p => p.tags.some(tag => 
+        tag.toLowerCase().includes('web') || 
+        tag.toLowerCase().includes('mobile') ||
+        tag.toLowerCase().includes('e-commerce') ||
+        tag.toLowerCase().includes('digital')
+      ))
     },
   ];
 
@@ -217,6 +239,27 @@ export const Work = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="min-h-screen bg-neutral-50 dark:bg-gray-900 pt-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center py-12">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+              Unable to load projects
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4">{error}</p>
+            <button
+              onClick={fetchProjects}
+              className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-gray-900 pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -325,20 +368,20 @@ export const Work = () => {
           </TabsContent>
 
           <TabsContent value="all">
-            {renderProjectCards(projects)}
+            {projects.length > 0 ? (
+              renderProjectCards(projects)
+            ) : (
+              <div className="text-center py-12">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                  No completed projects yet
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400">
+                  Check back soon to see our latest work.
+                </p>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
-
-        {projects.length === 0 && (
-          <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-              No completed projects yet
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400">
-              Check back soon to see our latest work.
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );

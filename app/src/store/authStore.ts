@@ -12,8 +12,15 @@ interface AuthStore {
   setSession: (session: any | null) => void;
   signOut: () => Promise<void>;
   checkRole: () => Promise<void>;
-  dummyLogin: (email: string, password: string) => Promise<{ error: string | null }>;
+  signInWithGoogle: () => Promise<{ error: string | null }>;
 }
+
+// Admin email addresses
+const ADMIN_EMAILS = [
+  'lokeshwaran100@gmail.com',
+  'devwithloki@gmail.com',
+  'artsofshree@gmail.com'
+];
 
 export const useAuthStore = create<AuthStore>()(
   persist(
@@ -30,73 +37,86 @@ export const useAuthStore = create<AuthStore>()(
       },
       checkRole: async () => {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        if (!user?.email) return;
 
-        // For dummy login, set roles based on email
-        if (user.email === 'admin@aakkai.com') {
-          set({ isAdmin: true, isTeamMember: false });
-        } else if (user.email === 'team@aakkai.com') {
-          set({ isAdmin: false, isTeamMember: true });
+        const isAdmin = ADMIN_EMAILS.includes(user.email);
+        
+        try {
+          // Check if user role exists in database
+          const { data: existingRole } = await supabase
+            .from('user_roles')
+            .select('role')
+            .eq('user_id', user.id)
+            .single();
+
+          if (!existingRole) {
+            // Create user role based on email
+            const role = isAdmin ? 'admin' : 'team_member';
+            
+            const { error } = await supabase
+              .from('user_roles')
+              .insert([{
+                user_id: user.id,
+                role: role
+              }]);
+
+            if (error) {
+              console.error('Error creating user role:', error);
+            }
+          }
+
+          // Set role state
+          set({ 
+            isAdmin: isAdmin,
+            isTeamMember: !isAdmin
+          });
+
+          // Create team member profile if user is team member and doesn't have one
+          if (!isAdmin) {
+            const { data: existingProfile } = await supabase
+              .from('team_members')
+              .select('id')
+              .eq('user_id', user.id)
+              .single();
+
+            if (!existingProfile) {
+              const { error: profileError } = await supabase
+                .from('team_members')
+                .insert([{
+                  user_id: user.id,
+                  role: 'Team Member',
+                  expertise: [],
+                  experience: '',
+                  is_available: true,
+                  projects_collaborated: 0
+                }]);
+
+              if (profileError) {
+                console.error('Error creating team member profile:', profileError);
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error in checkRole:', error);
         }
       },
-      dummyLogin: async (email: string, password: string) => {
-        if (
-          (email === 'admin@aakkai.com' && password === 'aakkai') ||
-          (email === 'team@aakkai.com' && password === 'aakkai')
-        ) {
-          // Use predefined UUIDs that match the database
-          const userId = email === 'admin@aakkai.com' 
-            ? '00000000-0000-0000-0000-000000000001'
-            : '00000000-0000-0000-0000-000000000002';
-
-          const dummyUser = {
-            id: userId,
-            email: email,
-            role: email === 'admin@aakkai.com' ? 'admin' : 'team_member',
-            aud: 'authenticated',
-            created_at: new Date().toISOString(),
-            app_metadata: {},
-            user_metadata: {},
-            identities: [],
-            confirmed_at: new Date().toISOString(),
-            email_confirmed_at: new Date().toISOString(),
-            phone: '',
-            last_sign_in_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          } as User;
-
-          const dummySession = {
-            access_token: `dummy-token-${userId}`,
-            refresh_token: `dummy-refresh-token-${userId}`,
-            expires_in: 3600,
-            expires_at: Math.floor(Date.now() / 1000) + 3600,
-            token_type: 'bearer',
-            user: dummyUser,
-          };
-
-          // Mock the Supabase auth state
-          // We'll override the auth.getUser method temporarily
-          const originalGetUser = supabase.auth.getUser;
-          supabase.auth.getUser = async () => ({
-            data: { user: dummyUser },
-            error: null
+      signInWithGoogle: async () => {
+        try {
+          const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+              redirectTo: `${window.location.origin}/`
+            }
           });
 
-          // Mock the auth.uid() function for RLS
-          const originalUid = (supabase as any).auth.uid;
-          (supabase as any).auth.uid = () => userId;
-
-          set({ 
-            user: dummyUser,
-            session: dummySession,
-            isAdmin: email === 'admin@aakkai.com',
-            isTeamMember: email === 'team@aakkai.com'
-          });
+          if (error) {
+            return { error: error.message };
+          }
 
           return { error: null };
+        } catch (err: any) {
+          return { error: err.message || 'Failed to sign in with Google' };
         }
-
-        return { error: 'Invalid login credentials' };
       },
     }),
     {

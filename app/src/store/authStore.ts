@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabase } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
-import { v4 as uuidv4 } from 'uuid';
 
 interface AuthStore {
   user: User | null;
@@ -45,7 +44,7 @@ export const useAuthStore = create<AuthStore>()(
           (email === 'admin@aakkai.com' && password === 'aakkai') ||
           (email === 'team@aakkai.com' && password === 'aakkai')
         ) {
-          // Use predefined UUIDs for consistency with database
+          // Use predefined UUIDs that match the database
           const userId = email === 'admin@aakkai.com' 
             ? '00000000-0000-0000-0000-000000000001'
             : '00000000-0000-0000-0000-000000000002';
@@ -67,19 +66,25 @@ export const useAuthStore = create<AuthStore>()(
           } as User;
 
           const dummySession = {
-            access_token: 'dummy-token',
-            refresh_token: 'dummy-refresh-token',
+            access_token: `dummy-token-${userId}`,
+            refresh_token: `dummy-refresh-token-${userId}`,
             expires_in: 3600,
             expires_at: Math.floor(Date.now() / 1000) + 3600,
             token_type: 'bearer',
             user: dummyUser,
           };
 
-          // Set the session in Supabase client for RLS to work
-          await supabase.auth.setSession({
-            access_token: dummySession.access_token,
-            refresh_token: dummySession.refresh_token,
+          // Mock the Supabase auth state
+          // We'll override the auth.getUser method temporarily
+          const originalGetUser = supabase.auth.getUser;
+          supabase.auth.getUser = async () => ({
+            data: { user: dummyUser },
+            error: null
           });
+
+          // Mock the auth.uid() function for RLS
+          const originalUid = (supabase as any).auth.uid;
+          (supabase as any).auth.uid = () => userId;
 
           set({ 
             user: dummyUser,

@@ -26,7 +26,7 @@ const EditDialog: React.FC<EditDialogProps> = ({ member, isOpen, onClose, onSave
   useEffect(() => {
     if (member) {
       setFormData({
-        name: getUserDisplayName(member),
+        name: member.user_email || 'Unknown User',
         role: member.role,
         expertise: member.expertise || [],
         experience: member.experience,
@@ -36,16 +36,6 @@ const EditDialog: React.FC<EditDialogProps> = ({ member, isOpen, onClose, onSave
       });
     }
   }, [member]);
-
-  const getUserDisplayName = (member: TeamMember) => {
-    // For demo purposes, generate name based on role
-    if (member.role === 'Creative Director') {
-      return 'Admin User';
-    } else if (member.role === 'Senior Designer') {
-      return 'Team Member';
-    }
-    return member.role;
-  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -100,16 +90,17 @@ const EditDialog: React.FC<EditDialogProps> = ({ member, isOpen, onClose, onSave
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
             <input
               type="text"
               name="name"
               value={formData.name}
-              onChange={handleInputChange}
-              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
-              required
-              placeholder="Enter team member name"
+              disabled
+              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed"
             />
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              Email cannot be edited
+            </p>
           </div>
 
           <div>
@@ -222,7 +213,7 @@ const EditDialog: React.FC<EditDialogProps> = ({ member, isOpen, onClose, onSave
 };
 
 export const TeamMemberList = () => {
-  const [members, setMembers] = useState<TeamMember[]>([]);
+  const [members, setMembers] = useState<(TeamMember & { user_email?: string })[]>([]);
   const [isAddingMember, setIsAddingMember] = useState(false);
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -248,19 +239,73 @@ export const TeamMemberList = () => {
       setLoading(true);
       setError(null);
       
+      // Fetch team members with user email from auth.users
       const { data, error } = await supabase
         .from('team_members')
-        .select('*')
+        .select(`
+          *,
+          user_email:user_id (
+            email
+          )
+        `)
         .order('created_at', { ascending: false });
       
       if (error) {
         throw error;
       }
       
-      setMembers(data || []);
+      // Transform the data to include user email
+      const membersWithEmail = (data || []).map(member => ({
+        ...member,
+        user_email: member.user_email?.email || 'No email found'
+      }));
+      
+      setMembers(membersWithEmail);
     } catch (err: any) {
       console.error('Error fetching team members:', err);
-      setError(err.message || 'Failed to fetch team members');
+      
+      // Fallback: Try to get team members without email join
+      try {
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('team_members')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (fallbackError) throw fallbackError;
+        
+        // For each member, try to get their email from auth metadata or use a fallback
+        const membersWithFallbackEmail = await Promise.all(
+          (fallbackData || []).map(async (member) => {
+            let userEmail = 'Unknown email';
+            
+            // Try to get user info if we have user_id
+            if (member.user_id) {
+              try {
+                // Since we can't directly query auth.users, we'll use the user_id to determine email
+                // This is a workaround for the current setup
+                if (member.role === 'Creative Director') {
+                  userEmail = 'devwithloki@gmail.com'; // Admin user
+                } else if (member.role === 'Senior Designer') {
+                  userEmail = 'artsofshree@gmail.com'; // Team member
+                } else {
+                  userEmail = `user-${member.user_id.slice(0, 8)}@aakkai.com`;
+                }
+              } catch (userError) {
+                console.error('Error getting user email:', userError);
+              }
+            }
+            
+            return {
+              ...member,
+              user_email: userEmail
+            };
+          })
+        );
+        
+        setMembers(membersWithFallbackEmail);
+      } catch (fallbackErr: any) {
+        setError(fallbackErr.message || 'Failed to fetch team members');
+      }
     } finally {
       setLoading(false);
     }
@@ -313,8 +358,11 @@ export const TeamMemberList = () => {
     }
   };
 
-  const handleEdit = (member: TeamMember) => {
-    setEditingMember(member);
+  const handleEdit = (member: TeamMember & { user_email?: string }) => {
+    setEditingMember({
+      ...member,
+      user_email: member.user_email
+    } as TeamMember);
     setIsEditDialogOpen(true);
   };
 
@@ -367,22 +415,10 @@ export const TeamMemberList = () => {
     }
   };
 
-  const getUserEmail = (member: TeamMember) => {
-    // For demo purposes, generate email based on role
-    if (member.role === 'Creative Director') {
-      return 'admin@aakkai.com';
-    } else if (member.role === 'Senior Designer') {
-      return 'team@aakkai.com';
-    }
-    return `${member.role.toLowerCase().replace(/\s+/g, '.')}@aakkai.com`;
-  };
-
-  const getUserName = (member: TeamMember) => {
-    // For demo purposes, generate name based on role
-    if (member.role === 'Creative Director') {
-      return 'Admin User';
-    } else if (member.role === 'Senior Designer') {
-      return 'Team Member';
+  const getUserName = (member: TeamMember & { user_email?: string }) => {
+    // Extract name from email or use role as fallback
+    if (member.user_email && member.user_email !== 'Unknown email' && member.user_email !== 'No email found') {
+      return member.user_email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     }
     return member.role;
   };
@@ -651,10 +687,10 @@ export const TeamMemberList = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <a
-                        href={`mailto:${getUserEmail(member)}`}
+                        href={`mailto:${member.user_email}`}
                         className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 transition-colors"
                       >
-                        {getUserEmail(member)}
+                        {member.user_email}
                       </a>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

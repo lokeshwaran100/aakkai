@@ -8,6 +8,7 @@ export interface TeamMember {
   is_available: boolean;
   projects_collaborated: number;
   created_at: string;
+  user_email?: string; // Add this field to store the actual email
 }
 
 export interface Project {
@@ -29,9 +30,9 @@ export interface MemberProject {
   start_date?: string;
   end_date?: string;
   member_id: string;
+  created_at: string;
   pdf_url?: string;
   pdf_filename?: string;
-  created_at: string;
 }
 
 export interface Inquiry {

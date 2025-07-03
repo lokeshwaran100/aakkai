@@ -17,7 +17,6 @@ interface AuthStore {
 
 // Admin email addresses
 const ADMIN_EMAILS = [
-  'lokeshwaran100@gmail.com',
   'devwithloki@gmail.com',
   'artsofshree@gmail.com'
 ];

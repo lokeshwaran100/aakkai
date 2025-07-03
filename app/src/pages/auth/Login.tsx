@@ -85,7 +85,6 @@ export const Login = () => {
           <div className="space-y-2 text-gray-600 dark:text-gray-400">
             <p className="font-medium">Admin Access:</p>
             <div className="text-xs space-y-1">
-              <p>• lokeshwaran100@gmail.com</p>
               <p>• devwithloki@gmail.com</p>
               <p>• artsofshree@gmail.com</p>
             </div>

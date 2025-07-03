@@ -29,6 +29,8 @@ export interface MemberProject {
   start_date?: string;
   end_date?: string;
   member_id: string;
+  pdf_url?: string;
+  pdf_filename?: string;
   created_at: string;
 }
 

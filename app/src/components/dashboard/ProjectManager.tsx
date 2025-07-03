@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuthStore } from '../../store/authStore';
-import { PlusCircle, Calendar, Tag, Clock, CheckCircle, Pause, Play, X, Pencil, Trash2, Eye } from 'lucide-react';
+import { PlusCircle, Calendar, Tag, Clock, CheckCircle, Pause, Play, X, Pencil, Trash2, Eye, FileText, Upload } from 'lucide-react';
 import type { MemberProject, TeamMember } from '../../types';
 
 interface ProjectFormData {
@@ -12,6 +12,8 @@ interface ProjectFormData {
   status: 'planning' | 'in_progress' | 'completed' | 'on_hold';
   startDate: string;
   endDate: string;
+  pdfUrl: string;
+  pdfFilename: string;
 }
 
 export const ProjectManager = () => {
@@ -23,6 +25,7 @@ export const ProjectManager = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [uploadingPdf, setUploadingPdf] = useState(false);
   const [formData, setFormData] = useState<ProjectFormData>({
     title: '',
     description: '',
@@ -31,6 +34,8 @@ export const ProjectManager = () => {
     status: 'planning',
     startDate: '',
     endDate: '',
+    pdfUrl: '',
+    pdfFilename: '',
   });
 
   const statusOptions = [
@@ -111,6 +116,42 @@ export const ProjectManager = () => {
     }));
   };
 
+  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf') {
+      setError('Please select a PDF file');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+      setError('PDF file size must be less than 10MB');
+      return;
+    }
+
+    setUploadingPdf(true);
+    setError(null);
+
+    try {
+      // For demo purposes, we'll use a placeholder URL
+      // In a real implementation, you would upload to Supabase Storage or another service
+      const fileName = `${Date.now()}-${file.name}`;
+      const pdfUrl = `https://example.com/pdfs/${fileName}`;
+
+      setFormData(prev => ({
+        ...prev,
+        pdfUrl: pdfUrl,
+        pdfFilename: file.name,
+      }));
+    } catch (err: any) {
+      console.error('Error uploading PDF:', err);
+      setError('Failed to upload PDF. Please try again.');
+    } finally {
+      setUploadingPdf(false);
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       title: '',
@@ -120,6 +161,8 @@ export const ProjectManager = () => {
       status: 'planning',
       startDate: '',
       endDate: '',
+      pdfUrl: '',
+      pdfFilename: '',
     });
     setEditingProject(null);
     setIsAddingProject(false);
@@ -143,6 +186,8 @@ export const ProjectManager = () => {
         start_date: formData.startDate || null,
         end_date: formData.endDate || null,
         member_id: teamMember.id,
+        pdf_url: formData.pdfUrl || null,
+        pdf_filename: formData.pdfFilename || null,
       };
 
       if (editingProject) {
@@ -178,6 +223,8 @@ export const ProjectManager = () => {
       status: project.status,
       startDate: project.start_date || '',
       endDate: project.end_date || '',
+      pdfUrl: project.pdf_url || '',
+      pdfFilename: project.pdf_filename || '',
     });
     setIsAddingProject(true);
   };
@@ -200,6 +247,10 @@ export const ProjectManager = () => {
       console.error('Error deleting project:', err);
       setError(err.message || 'Failed to delete project');
     }
+  };
+
+  const handleViewPdf = (pdfUrl: string) => {
+    window.open(pdfUrl, '_blank');
   };
 
   const getStatusConfig = (status: string) => {
@@ -355,6 +406,48 @@ export const ProjectManager = () => {
               />
             </div>
 
+            {/* PDF Upload Section */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Project PDF (Optional)
+              </label>
+              <div className="space-y-3">
+                {formData.pdfUrl && (
+                  <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <FileText className="text-red-500" size={20} />
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
+                        {formData.pdfFilename || 'Project PDF'}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, pdfUrl: '', pdfFilename: '' }))}
+                      className="text-red-500 hover:text-red-700 transition-colors"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+                <div className="flex items-center space-x-3">
+                  <label className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                    <Upload size={16} />
+                    <span>{uploadingPdf ? 'Uploading...' : 'Upload PDF'}</span>
+                    <input
+                      type="file"
+                      accept=".pdf"
+                      onChange={handlePdfUpload}
+                      className="hidden"
+                      disabled={uploadingPdf}
+                    />
+                  </label>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    Max 10MB, PDF only
+                  </span>
+                </div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Date</label>
@@ -501,21 +594,34 @@ export const ProjectManager = () => {
                     </div>
                   )}
 
-                  <div className="flex justify-end space-x-2">
-                    <button
-                      onClick={() => handleEdit(project)}
-                      className="p-2 text-gray-600 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors"
-                      title="Edit project"
-                    >
-                      <Pencil size={18} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(project.id)}
-                      className="p-2 text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
-                      title="Delete project"
-                    >
-                      <Trash2 size={18} />
-                    </button>
+                  <div className="flex justify-between items-center">
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleEdit(project)}
+                        className="p-2 text-gray-600 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors"
+                        title="Edit project"
+                      >
+                        <Pencil size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(project.id)}
+                        className="p-2 text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
+                        title="Delete project"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                    
+                    {project.pdf_url && (
+                      <button
+                        onClick={() => handleViewPdf(project.pdf_url!)}
+                        className="flex items-center space-x-1 px-3 py-1 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 rounded-full text-sm hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
+                        title="View PDF"
+                      >
+                        <FileText size={14} />
+                        <span>PDF</span>
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

@@ -23,22 +23,22 @@ const stats = [
 
 const team = [
   {
-    name: 'Emma Thompson',
     role: 'Creative Director',
     image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80',
-    bio: 'With over 15 years of experience in brand strategy and design, Emma leads our creative vision.',
+    expertise: ['Brand Strategy', 'UI Design', 'Team Leadership'],
+    bio: 'With over 15 years of experience in creative direction and brand strategy, leading our creative vision with expertise in developing comprehensive brand identities and user-centered design solutions.',
   },
   {
-    name: 'David Chen',
     role: 'Lead UI/UX Designer',
     image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80',
-    bio: 'David specializes in creating intuitive and beautiful user experiences that drive results.',
+    expertise: ['UI Design', 'UX Research', 'Prototyping'],
+    bio: 'Specializes in creating intuitive and beautiful user experiences that drive results. Expert in user research, interface design, and creating seamless digital experiences that convert.',
   },
   {
-    name: 'Sarah Miller',
     role: 'Brand Strategist',
     image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80',
-    bio: 'Sarah helps businesses discover and articulate their unique brand story and position in the market.',
+    expertise: ['Brand Strategy', 'Market Research', 'Brand Identity'],
+    bio: 'Helps businesses discover and articulate their unique brand story and position in the market. Specializes in developing strategic brand frameworks that resonate with target audiences.',
   },
 ];
 
@@ -100,12 +100,23 @@ export const About = () => {
               >
                 <img
                   src={member.image}
-                  alt={member.name}
+                  alt={member.role}
                   className="w-full h-64 object-cover"
                 />
                 <div className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">{member.name}</h3>
-                  <p className="text-primary-500 mb-4">{member.role}</p>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">{member.role}</h3>
+                  <div className="mb-4">
+                    <div className="flex flex-wrap gap-2">
+                      {member.expertise.map((exp, expIndex) => (
+                        <span
+                          key={expIndex}
+                          className="px-2 py-1 bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 text-sm rounded-full"
+                        >
+                          {exp}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                   <p className="text-gray-600 dark:text-gray-300">{member.bio}</p>
                 </div>
               </motion.div>

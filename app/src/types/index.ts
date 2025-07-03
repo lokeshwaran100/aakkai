@@ -19,6 +19,19 @@ export interface Project {
   created_at: string;
 }
 
+export interface MemberProject {
+  id: string;
+  title: string;
+  description: string;
+  image_url?: string;
+  tags: string[];
+  status: 'planning' | 'in_progress' | 'completed' | 'on_hold';
+  start_date?: string;
+  end_date?: string;
+  member_id: string;
+  created_at: string;
+}
+
 export interface Inquiry {
   id: string;
   name: string;

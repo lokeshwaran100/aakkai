@@ -1,28 +1,30 @@
 export interface TeamMember {
   id: string;
+  user_id?: string;
   role: string;
   expertise: string[];
   experience: string;
-  imageUrl: string;
-  isAvailable: boolean;
-  createdAt: string;
+  image_url?: string;
+  is_available: boolean;
+  created_at: string;
 }
 
 export interface Project {
   id: string;
   title: string;
   description: string;
-  imageUrl: string;
+  image_url?: string;
   tags: string[];
-  createdAt: string;
+  created_at: string;
 }
 
 export interface Inquiry {
   id: string;
   name: string;
   email: string;
+  service?: string;
   message: string;
-  status: 'new' | 'inProgress' | 'completed';
+  status: 'new' | 'in_progress' | 'completed';
   createdAt: string;
 }
 
@@ -30,7 +32,7 @@ export interface Notification {
   id: string;
   title: string;
   message: string;
-  recipientId: string;
+  recipient_id: string;
   read: boolean;
-  createdAt: string;
+  created_at: string;
 }

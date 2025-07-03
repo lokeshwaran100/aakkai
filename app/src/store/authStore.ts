@@ -42,23 +42,44 @@ export const useAuthStore = create<AuthStore>()(
       },
       dummyLogin: async (email: string, password: string) => {
         if (
-          (email === 'admin@aakkai.com' && password === 'aakkaai') ||
-          (email === 'team@aakkai.com' && password === 'aakkaai')
+          (email === 'admin@aakkai.com' && password === 'aakkai') ||
+          (email === 'team@aakkai.com' && password === 'aakkai')
         ) {
+          // Use predefined UUIDs for consistency with database
+          const userId = email === 'admin@aakkai.com' 
+            ? '00000000-0000-0000-0000-000000000001'
+            : '00000000-0000-0000-0000-000000000002';
+
           const dummyUser = {
-            id: uuidv4(),
+            id: userId,
             email: email,
             role: email === 'admin@aakkai.com' ? 'admin' : 'team_member',
             aud: 'authenticated',
             created_at: new Date().toISOString(),
+            app_metadata: {},
+            user_metadata: {},
+            identities: [],
+            confirmed_at: new Date().toISOString(),
+            email_confirmed_at: new Date().toISOString(),
+            phone: '',
+            last_sign_in_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
           } as User;
 
           const dummySession = {
             access_token: 'dummy-token',
             refresh_token: 'dummy-refresh-token',
             expires_in: 3600,
+            expires_at: Math.floor(Date.now() / 1000) + 3600,
+            token_type: 'bearer',
             user: dummyUser,
           };
+
+          // Set the session in Supabase client for RLS to work
+          await supabase.auth.setSession({
+            access_token: dummySession.access_token,
+            refresh_token: dummySession.refresh_token,
+          });
 
           set({ 
             user: dummyUser,

@@ -7,13 +7,14 @@ export const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    service: '',
     message: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -29,13 +30,14 @@ export const Contact = () => {
         .insert([{
           name: formData.name,
           email: formData.email,
+          service: formData.service,
           message: formData.message,
         }]);
 
       if (error) throw error;
 
       setIsSubmitted(true);
-      setFormData({ name: '', email: '', message: '' });
+      setFormData({ name: '', email: '', service: '', message: '' });
     } catch (err) {
       setError('Something went wrong. Please try again later.');
       console.error('Error submitting inquiry:', err);
@@ -162,6 +164,24 @@ export const Contact = () => {
                       className="w-full px-4 py-2 bg-neutral-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 dark:text-white"
                       placeholder="your@email.com"
                     />
+                  </div>
+
+                  <div>
+                    <label htmlFor="service" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Service Interested In
+                    </label>
+                    <select
+                      id="service"
+                      name="service"
+                      value={formData.service}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-2 bg-neutral-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 dark:text-white"
+                    >
+                      <option value="">Select a service</option>
+                      <option value="Branding">Branding</option>
+                      <option value="UI/UX Designing">UI/UX Designing</option>
+                    </select>
                   </div>
 
                   <div>
